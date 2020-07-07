@@ -39,6 +39,17 @@ public class Pages {
 
     }
 
+    @GetMapping("/dashboard")
+    public String dashboard(Principal principal, Model model) {
+
+        LOGGER.info("Access to dashboard page");
+
+        model.addAttribute("name", principal.getName());
+
+        return "dashboard";
+
+    }
+
     @GetMapping("/newauction")
     public String newAuction(Principal principal, Model model) {
 
@@ -47,6 +58,72 @@ public class Pages {
         model.addAttribute("name", principal.getName());
 
         return "newauction";
+
+    }
+
+    @GetMapping("/lots")
+    public String lots(Principal principal, Model model) {
+
+        LOGGER.info("Access to lots page");
+
+        model.addAttribute("name", principal.getName());
+
+        return "lots";
+
+    }
+
+    @GetMapping("/sellers")
+    public String sellers(Principal principal, Model model) {
+
+        LOGGER.info("Access to sellers page");
+
+        model.addAttribute("name", principal.getName());
+
+        return "sellers";
+
+    }
+
+    @GetMapping("/buyers")
+    public String bueyrs(Principal principal, Model model) {
+
+        LOGGER.info("Access to buyers page");
+
+        model.addAttribute("name", principal.getName());
+
+        return "buyers";
+
+    }
+
+    @GetMapping("/auctioneering")
+    public String auctioneering(Principal principal, Model model) {
+
+        LOGGER.info("Access to auctioneering page");
+
+        model.addAttribute("name", principal.getName());
+
+        return "auctioneering";
+
+    }
+
+    @GetMapping("/documents")
+    public String documents(Principal principal, Model model) {
+
+        LOGGER.info("Access to documents page");
+
+        model.addAttribute("name", principal.getName());
+
+        return "documents";
+
+    }
+
+    @GetMapping("/archive")
+    public String archive(Principal principal, Model model) {
+
+        LOGGER.info("Access to archive page");
+
+        model.addAttribute("name", principal.getName());
+
+        return "archive";
 
     }
 
