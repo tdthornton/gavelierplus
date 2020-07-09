@@ -1,19 +1,23 @@
 package com.gavelier.gavelierplus;
 
 import java.security.Principal;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
 import java.util.logging.Logger;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 @Controller
 public class Pages {
-
-    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
-    private String thevalue;
 
     private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
 
@@ -23,9 +27,27 @@ public class Pages {
 
         model.addAttribute("name", name);
 
-        LOGGER.info("the value: " + thevalue);
+        return "login";
+    }
 
-        return "index";
+    @GetMapping("/logout")
+    public String logout(@RequestParam(name = "name", required = false, defaultValue = "World") String name,
+            Model model, Principal principal, HttpServletRequest httpServletRequest) throws ServletException {
+
+        model.addAttribute("name", name);
+
+        SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
+
+        httpServletRequest.logout();
+
+        SecurityContextHolder.clearContext();
+
+        HttpSession session = httpServletRequest.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        return "login";
     }
 
     @GetMapping("/restricted")
@@ -55,6 +77,13 @@ public class Pages {
 
         LOGGER.info("Access to new auction page");
 
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = new Date();
+        
+
+
+        model.addAttribute("today", sdf.format(date));
+        LOGGER.info("DATE: " + sdf.format(date));
         model.addAttribute("name", principal.getName());
 
         return "newauction";
