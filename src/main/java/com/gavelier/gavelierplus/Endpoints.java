@@ -9,7 +9,7 @@ import org.springframework.validation.FieldError;
 import java.util.List;
 import java.util.logging.Logger;
 
-import com.gavelier.gavelierplus.domain.NewAuctionRequest;
+import com.gavelier.gavelierplus.domain.Auction;
 
 @Controller
 public class Endpoints {
@@ -21,9 +21,8 @@ public class Endpoints {
     private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
 
     @PostMapping("/createauction")
-    public String greeting(NewAuctionRequest newAuctionRequest, BindingResult bindingResult) {
+    public String greeting(Auction auction, BindingResult bindingResult) {
 
-        
 
         LOGGER.info("called");
         LOGGER.info("Binding errors =  " + bindingResult.hasErrors());
@@ -34,13 +33,10 @@ public class Endpoints {
             LOGGER.info("Unable to bind: " + ef.getField());
         });
 
-        dynamoDBRepository.insertIntoDynamoDB(newAuctionRequest);
+        dynamoDBRepository.insertIntoDynamoDB(auction);
 
-        LOGGER.info("NAME: " + newAuctionRequest.getInputCompanyName());
-        LOGGER.info("DEC: " + newAuctionRequest.toString());
-
-
-
+        LOGGER.info("NAME: " + auction.getInputCompanyName());
+        LOGGER.info("DEC: " + auction.toString());
 
         return "newauction";
     }

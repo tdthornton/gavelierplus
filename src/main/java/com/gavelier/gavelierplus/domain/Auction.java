@@ -13,7 +13,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @DynamoDBTable(tableName = "auctions")
-public class NewAuctionRequest implements Serializable {
+public class Auction implements Serializable {
 
     /**
      *
@@ -35,10 +35,10 @@ public class NewAuctionRequest implements Serializable {
     private BigDecimal inputBuyerFeeMinimum;
     private BigDecimal inputBuyerFeeFixed;
 
-    public NewAuctionRequest() {
+    public Auction() {
     }
 
-    public NewAuctionRequest(String userId, String inputCompanyName, Date date, 
+    public Auction(String userId, String inputCompanyName, Date date, 
             int inputSellerFeePercentage,
             BigDecimal inputSellerFeeMinimum, BigDecimal inputSellerFeeFixed, 
             int inputBuyerFeePercentage,
@@ -53,7 +53,7 @@ public class NewAuctionRequest implements Serializable {
         this.inputBuyerFeeFixed = inputBuyerFeeFixed;
     }
 
-    public NewAuctionRequest(String id, String userId, String inputCompanyName, Date date, 
+    public Auction(String id, String userId, String inputCompanyName, Date date, 
             int inputSellerFeePercentage,
             BigDecimal inputSellerFeeMinimum, BigDecimal inputSellerFeeFixed, 
             int inputBuyerFeePercentage,

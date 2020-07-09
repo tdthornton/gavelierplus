@@ -1,25 +1,34 @@
 package com.gavelier.gavelierplus;
 
 import java.security.Principal;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.text.SimpleDateFormat;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.gavelier.gavelierplus.domain.Auction;
+
 @Controller
 public class Pages {
 
     private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
+
+    @Autowired
+    DynamoDBRepository dynamoDBRepository;
 
     @GetMapping("/")
     public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name,
@@ -96,7 +105,11 @@ public class Pages {
 
         LOGGER.info("Access to lots page");
 
+        
+        
+
         model.addAttribute("name", principal.getName());
+        model.addAttribute("allAuctionsForUser", getAllAuctionsForUserInDateOrder(principal.getName()));
 
         return "lots";
 
@@ -154,6 +167,23 @@ public class Pages {
         model.addAttribute("name", principal.getName());
 
         return "archive";
+
+    }
+
+    public List<Auction> getAllAuctionsForUserInDateOrder(String userId) {
+
+
+        List<Auction> allAuctionsForUser = dynamoDBRepository.allAuctionsForUserId(userId);
+
+
+        return allAuctionsForUser.stream().distinct().sorted(new Comparator<Auction>() {
+            public int compare(Auction o1, Auction o2) {
+                return o1.getDate().compareTo(o2.getDate());
+            }
+          })
+        .collect(Collectors.toList());
+
+
 
     }
 
