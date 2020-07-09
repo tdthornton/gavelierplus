@@ -85,6 +85,7 @@ public class Pages {
         model.addAttribute("today", sdf.format(date));
         LOGGER.info("DATE: " + sdf.format(date));
         model.addAttribute("name", principal.getName());
+        model.addAttribute("userId", principal.getName());
 
         return "newauction";
 

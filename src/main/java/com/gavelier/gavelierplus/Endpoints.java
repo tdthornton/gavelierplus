@@ -1,6 +1,7 @@
 package com.gavelier.gavelierplus;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -12,6 +13,9 @@ import com.gavelier.gavelierplus.domain.NewAuctionRequest;
 
 @Controller
 public class Endpoints {
+
+    @Autowired
+    DynamoDBRepository dynamoDBRepository;
 
 
     private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
@@ -29,6 +33,8 @@ public class Endpoints {
         errorFields.forEach(ef -> {
             LOGGER.info("Unable to bind: " + ef.getField());
         });
+
+        dynamoDBRepository.insertIntoDynamoDB(newAuctionRequest);
 
         LOGGER.info("NAME: " + newAuctionRequest.getInputCompanyName());
         LOGGER.info("DEC: " + newAuctionRequest.toString());

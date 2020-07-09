@@ -64,7 +64,18 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-dynamodb -->
+	<dependency>
+		<groupId>com.amazonaws</groupId>
+		<artifactId>aws-java-sdk-dynamodb</artifactId>
+		<version>1.11.818</version>
+	</dependency>
+		
 	</dependencies>
+
+
+	
+
 
 	<build>
 		<plugins>
