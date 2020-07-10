@@ -6,9 +6,11 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.gavelier.gavelierplus.domain.Auction;
+import com.gavelier.gavelierplus.domain.Lot;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -24,6 +26,40 @@ public class DynamoDBRepository {
     public void insertIntoDynamoDB(Auction auction) {
         mapper.save(auction);
     }
+
+    public void createLot(Lot lot) {
+        mapper.save(lot);
+    }
+
+    public Auction getOneAuctionById(String auctionId, String userId) {
+        return mapper.load(Auction.class, auctionId, userId);
+    }
+
+    public List<Lot> getAllLotsForAuction(String auctionId) {
+        List<Lot> lots = null;
+
+        try{
+            Lot partitionKey = new Lot();
+            partitionKey.setAuctionId(auctionId);
+            DynamoDBQueryExpression<Lot> queryExpression = new DynamoDBQueryExpression<>();
+            queryExpression.setHashKeyValues(partitionKey);
+            queryExpression.setIndexName("auctionId");
+            queryExpression.setConsistentRead(false);
+    
+            lots = mapper.query(Lot.class, queryExpression);
+        } catch (Exception e){
+            LOGGER.info("Exception querying datasource for gsiField " +  auctionId);
+            throw e;
+        }
+
+        LOGGER.info("LIST OF LOTS: ");
+        LOGGER.info(lots.toString());
+    
+        return lots;
+    
+    }
+
+
 
     public List<Auction> allAuctionsForUserId(String userId) {
 

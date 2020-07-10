@@ -106,9 +106,13 @@ public class Pages {
         LOGGER.info("Access to lots page");
 
         
-        
+        String currentAuctionId = "7a33721d-c0e8-4279-b5f7-ddcd861eaa64";
+
+        Auction currentAuction = dynamoDBRepository.getOneAuctionById(currentAuctionId, principal.getName());
 
         model.addAttribute("name", principal.getName());
+        model.addAttribute("currentAuctionId", currentAuctionId);
+        model.addAttribute("lotsForCurrentAuction", dynamoDBRepository.getAllLotsForAuction(currentAuctionId));
         model.addAttribute("allAuctionsForUser", getAllAuctionsForUserInDateOrder(principal.getName()));
 
         return "lots";

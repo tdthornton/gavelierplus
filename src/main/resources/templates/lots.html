@@ -144,7 +144,8 @@
 
               <th:block th:each="auction : ${allAuctionsForUser}">
 
-                <a class="dropdown-item" href="#" th:text="${auction.inputCompanyName + #dates.format(auction.date, 'dd-MMM-yyyy')}"></a>
+                <a class="dropdown-item" href="#"
+                  th:text="${auction.inputCompanyName + #dates.format(auction.date, 'dd-MMM-yyyy')}"></a>
 
               </th:block>
             </div>
@@ -225,7 +226,98 @@
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800">Blank Page</h1>
+          <h1 class="h3 mb-4 text-gray-800">Lots</h1>
+
+          <div class="row">
+            <div class="col">
+
+            </div>
+            <div class="col-11">
+
+
+              <form method="POST" th:action="@{/createlot}">
+                <div class="form-row">
+                  <div class="form-group col-md-8">
+                    <label for="lotName">Lot name</label>
+                    <input type="text" class="form-control" name="desc" id="desc" placeholder="Lot description"
+                      value="A mixed box of some things">
+                  </div>
+                  <div class="form-group col-sm">
+                    <label for="sellerNumber">Seller number</label>
+                    <input type="text" class="form-control" id="sellerNumber" value="1" name="sellerNumber">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group col-sm">
+                    <label for="estimate">Estimate</label>
+                    <input type="text" class="form-control" id="estimate" value="10" name="estimate">
+                    <br>
+
+                  </div>
+                  <div class="form-group col-sm">
+
+                  </div>
+                  <div class="form-group col-sm">
+                    <label for="reserve">Reserve</label>
+                    <input type="text" class="form-control" id="reserve" value="10" name="reserve">
+                    <br>
+                  </div>
+                </div>
+
+                <input type="hidden" name="userId" th:value="${name}" />
+                <input type="hidden" name="auctionId" th:value="${currentAuctionId}" />
+
+                <button type="submit" class="btn btn-primary w-100">Start new auction</button>
+              </form>
+
+
+            </div>
+            <div class="col">
+
+            </div>
+          </div>
+
+
+          <br><br><br>
+
+
+
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">All lots for auction</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>Lot Number</th>
+                      <th>Lot Description</th>
+                      <th>Seller Number</th>
+                      <th>Estimate</th>
+                      <th>Reserve</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <th:block th:each="lot : ${lotsForCurrentAuction}">
+
+                      <tr>
+                        <td th:text="${lot.lotNumber}"></td>
+                        <td th:text="${lot.desc}"></td>
+                        <td th:text="${lot.sellerNumber}"></td>
+                        <td th:text="${lot.estimate}"></td>
+                        <td th:text="${lot.reserve}"></td>
+                      </tr>
+
+                    </th:block>
+                    
+
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
 
 
         </div>
