@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 
 <head>
 
@@ -53,7 +53,7 @@
       <hr class="sidebar-divider my-0">
 
       <!-- Nav Item - New Auction -->
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" href="/newauction">
           <i class="fas fa-fw fa-plus-circle"></i>
           <span>New Auction</span></a>
@@ -63,8 +63,8 @@
       <hr class="sidebar-divider my-0">
 
       <!-- Nav Item - Lots -->
-      <li class="nav-item">
-        <a class="nav-link" href="/lots">
+      <li class="nav-item active">
+        <a class="nav-link" th:href="@{'/lots?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-list-ol"></i>
           <span>Lots</span></a>
       </li>
@@ -132,7 +132,30 @@
             <i class="fa fa-bars"></i>
           </button>
 
+          <!-- Topbar dropdown -->
+          <div class="dropdown w-100">
+            <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Switch Auction
+            </button>
 
+
+            <div class="dropdown-menu text-center" aria-labelledby="dropdownMenuButton">
+
+              <th:block th:each="auction : ${allAuctionsForUser}">
+
+
+
+                <a class="dropdown-item" th:href="@{/lots(auctionId=${auction.id})}"
+                  th:text="${auction.inputCompanyName + #dates.format(auction.date, 'dd-MMM-yyyy')}"></a>
+
+              </th:block>
+            </div>
+
+
+
+
+          </div>
 
           <!-- Topbar Navbar -->
           <ul class="navbar-nav ml-auto">
@@ -205,8 +228,7 @@
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <h1 class="h2 mb-4 text-gray-800">Start a new auction</h1>
-
+          <h1 class="h3 mb-4 text-gray-800" th:text="'Lots for   ' + ${currentAuctionName}"></h1>
 
           <div class="row">
             <div class="col">
@@ -215,68 +237,21 @@
             <div class="col-11">
 
 
-              <form method="POST" th:action="@{/createauction}">
-                <div class="form-row">
-                  <div class="form-group col-md-8">
-                    <label for="inputCompanyName">Auction name</label>
-                    <input type="text" class="form-control" name="inputCompanyName" id="inputCompanyName"
-                      placeholder="Company Name" value="Isle of Wight Auctions">
-                  </div>
-                  <div class="form-group col-sm">
-                    <!-- Date input -->
-                    <label class="control-label" for="date">Date</label>
-                    <input class="form-control" id="date" name="date" th:value="${today}" type="text" />
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-group col-sm">
-                    <label for="inputSellerFeePercentage">Seller fee %</label>
-                    <input type="text" class="form-control" id="inputSellerFeePercentage" value="10"
-                      name="inputSellerFeePercentage">
-                    <br>
-                    <label for="inputSellerFeeMinimum">Seller fee minimum £</label>
-                    <input type="text" class="form-control" id="inputSellerFeeMinimum" value="0.00"
-                      name="inputSellerFeeMinimum">
-                    <br>
-                    <label for="inputSellerFeeFixed">+ Fixed seller fee per lot £</label>
-                    <input type="text" class="form-control" id="inputSellerFeeFixed" value="0.50"
-                      name="inputSellerFeeFixed">
-                  </div>
-                  <div class="form-group col-sm">
-
-                  </div>
-                  <div class="form-group col-sm">
-                    <label for="inputBuyerFeePercentage">Buyer fee %</label>
-                    <input type="text" class="form-control" id="inputBuyerFeePercentage" value="10"
-                      name="inputBuyerFeePercentage">
-                    <br>
-                    <label for="inputBuyerFeeMinimum">Buyer fee minimum £</label>
-                    <input type="text" class="form-control" id="inputBuyerFeeMinimum" value="1.00"
-                      name="inputBuyerFeeMinimum">
-                    <br>
-                    <label for="inputBuyerFeeFixed">+ Fixed buyer fee per lot £</label>
-                    <input type="text" class="form-control" id="inputBuyerFeeFixed" value="0.00"
-                      name="inputBuyerFeeFixed">
-                  </div>
-                </div>
-
-                <input type="hidden" name="userId" th:value="${name}" />
-
-                <button type="submit" class="btn btn-primary w-100">Start new auction</button>
-              </form>
-
-
-            </div>
-            <div class="col">
-
-            </div>
+             <div th:if="${error}">
+              <div th:text="${error}" role="alert" class="alert alert-danger"></div>
           </div>
 
 
 
+              
+
+              
+
+              
 
 
 
+          
 
 
         </div>
@@ -326,8 +301,6 @@
     </div>
   </div>
 
-
-
   <!-- Bootstrap core JavaScript-->
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -337,25 +310,6 @@
 
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin-2.min.js"></script>
-
-  <!-- Include Date Range Picker -->
-  <script type="text/javascript"
-    src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css" />
-
-  <script>
-    $(document).ready(function () {
-      var date_input = $('input[name="date"]'); //our date input has the name "date"
-      var container = $('.bootstrap-iso form').length > 0 ? $('.bootstrap-iso form').parent() : "body";
-      date_input.datepicker({
-        format: 'dd/mm/yyyy',
-        container: container,
-        todayHighlight: true,
-        autoclose: true,
-      })
-    })
-  </script>
 
 </body>
 
