@@ -8,18 +8,15 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.gavelier.gavelierplus.domain.Lot;
 
 import org.apache.http.ParseException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +47,9 @@ public class CreateLotTest extends BaseControllerTest {
 
     @Test
     @WithMockUser
-    public void aTest() throws Exception {
+    public void testBasicCreateValidLot() throws Exception {
+
+        //post a basic form submission to /createlot with a valid lot, and see that the successful redirect is performed without errors
 
         Lot lot = new Lot("auctionId_192328j", 1, 2, "A mixed box of interesting items.", "£20", "",
                 new BigDecimal("10.00"), new BigDecimal("11.00"), new BigDecimal("8.50"));

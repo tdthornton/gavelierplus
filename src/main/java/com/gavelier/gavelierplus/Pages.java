@@ -62,17 +62,6 @@ public class Pages {
         return "login";
     }
 
-    @GetMapping("/restricted")
-    public String restricted(Principal principal, Model model) {
-
-        LOGGER.info("Access to restricted page");
-
-        model.addAttribute("name", principal.getName());
-
-        return "restricted";
-
-    }
-
     @GetMapping("/dashboard")
     public String dashboard(Principal principal, Model model) {
 
@@ -93,7 +82,6 @@ public class Pages {
         Date date = new Date();
 
         model.addAttribute("today", sdf.format(date));
-        LOGGER.info("DATE: " + sdf.format(date));
         model.addAttribute("name", principal.getName());
         model.addAttribute("userId", principal.getName());
 
@@ -106,19 +94,25 @@ public class Pages {
 
         LOGGER.info("Access to lots page");
 
-        model.addAttribute("error", queryParameters.get("error"));
-
         String currentAuctionId = queryParameters.get("auctionId");
 
         LOGGER.info("Called lots page, auction ID = " + currentAuctionId);
 
         model.addAttribute("allAuctionsForUser", getAllAuctionsForUserInDateOrder(principal.getName()));
 
+
+
+        model.addAttribute("error", queryParameters.get("error"));
+
+        
+
         if (currentAuctionId != null) {
             Auction currentAuction = dynamoDBRepository.getOneAuctionById(currentAuctionId, principal.getName());
 
-            if (currentAuction != null) {
+            if (currentAuction != null) { //if the auction exists, we can accept new lots for it, and show the existing ones.
 
+
+                //get all lots for this auction and sort the scan
                 List<Lot> allLotsForAuction = dynamoDBRepository.getAllLotsForAuction(currentAuctionId).stream()
                         .sorted((lot1, lot2) -> Integer.compare(lot2.getLotNumber(), lot1.getLotNumber()))
                         .collect(toList());
@@ -133,18 +127,21 @@ public class Pages {
                     model.addAttribute("nextLotNumber", allLotsForAuction.size() + 1);
                 }
                 model.addAttribute("currentAuctionId", currentAuctionId);
-                model.addAttribute("currentAuctionName",
-                        currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
+                model.addAttribute("currentAuctionName", currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
                 model.addAttribute("lotsForCurrentAuction", allLotsForAuction);
 
                 return "lots";
 
             } else {
 
+                //there is no valid auction provided
+                //so we show a page with no form, only the option to select an auction
                 return "emptylots";
 
             }
         } else {
+            //there is no valid auction provided
+                //so we show a page with no form, only the option to select an auction
             return "emptylots";
         }
 
