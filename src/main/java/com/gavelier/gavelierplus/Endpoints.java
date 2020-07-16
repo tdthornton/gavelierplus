@@ -1,22 +1,24 @@
 package com.gavelier.gavelierplus;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.Principal;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import com.gavelier.gavelierplus.domain.Auction;
 import com.gavelier.gavelierplus.domain.Lot;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class Endpoints {
@@ -24,15 +26,10 @@ public class Endpoints {
     @Autowired
     DynamoDBRepository dynamoDBRepository;
 
-
     private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
 
     @PostMapping("/createauction")
     public String greeting(Auction auction, BindingResult bindingResult) {
-
-
-        LOGGER.info("called create auction");
-        LOGGER.info("Binding errors =  " + bindingResult.hasErrors());
 
         List<FieldError> errorFields = bindingResult.getFieldErrors();
 
@@ -42,15 +39,24 @@ public class Endpoints {
 
         dynamoDBRepository.insertIntoDynamoDB(auction);
 
-        LOGGER.info("NAME: " + auction.getInputCompanyName());
-        LOGGER.info("DEC: " + auction.toString());
-
-        return "newauction";
+        return "redirect:/newauction";
 
     }
 
     @PostMapping("/createlot")
-    public String createLot(Lot lot, BindingResult bindingResult, Model model, java.security.Principal principal) {
+    public String createLot(@Valid Lot lot, BindingResult bindingResult, Model model, Principal principal)
+            throws UnsupportedEncodingException {
+
+        if (bindingResult.hasErrors()) {
+            LOGGER.info("Entered error branch in /createlot");
+           
+            StringBuilder errors = new StringBuilder();
+
+            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+
+
+			return "redirect:/lots?auctionId=" + lot.getAuctionId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
+		}
 
 
         LOGGER.info("called create lot");
@@ -64,19 +70,9 @@ public class Endpoints {
         });
 
         dynamoDBRepository.createLot(lot);
-
-
-        String currentAuctionId = "7a33721d-c0e8-4279-b5f7-ddcd861eaa64";
-
-        Auction currentAuction = dynamoDBRepository.getOneAuctionById(currentAuctionId, principal.getName());
-
-        model.addAttribute("name", principal.getName());
-        model.addAttribute("currentAuctionId", currentAuctionId);
-        model.addAttribute("lotsForCurrentAuction", dynamoDBRepository.getAllLotsForAuction(currentAuctionId));
-        model.addAttribute("allAuctionsForUser", getAllAuctionsForUserInDateOrder(principal.getName()));
         
 
-        return "lots";
+        return "redirect:/lots?auctionId=" + lot.getAuctionId();
         
     }
 
@@ -86,7 +82,7 @@ public class Endpoints {
         List<Auction> allAuctionsForUser = dynamoDBRepository.allAuctionsForUserId(userId);
 
 
-        return allAuctionsForUser.stream().distinct().sorted(new Comparator<Auction>() {
+        return allAuctionsForUser.stream().sorted(new Comparator<Auction>() {
             public int compare(Auction o1, Auction o2) {
                 return o1.getDate().compareTo(o2.getDate());
             }

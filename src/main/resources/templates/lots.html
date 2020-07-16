@@ -64,7 +64,7 @@
 
       <!-- Nav Item - Lots -->
       <li class="nav-item active">
-        <a class="nav-link" href="/lots">
+        <a class="nav-link" th:href="@{'/lots?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-list-ol"></i>
           <span>Lots</span></a>
       </li>
@@ -136,7 +136,7 @@
           <div class="dropdown w-100">
             <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton"
               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Auctions
+              Switch Auction
             </button>
 
 
@@ -144,7 +144,9 @@
 
               <th:block th:each="auction : ${allAuctionsForUser}">
 
-                <a class="dropdown-item" href="#"
+
+
+                <a class="dropdown-item" th:href="@{/lots(auctionId=${auction.id})}"
                   th:text="${auction.inputCompanyName + #dates.format(auction.date, 'dd-MMM-yyyy')}"></a>
 
               </th:block>
@@ -226,7 +228,7 @@
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800">Lots</h1>
+          <h1 class="h3 mb-4 text-gray-800" th:text="'Lots for   ' + ${currentAuctionName}"></h1>
 
           <div class="row">
             <div class="col">
@@ -235,7 +237,17 @@
             <div class="col-11">
 
 
-              <form method="POST" th:action="@{/createlot}">
+             <div th:if="${error}">
+              <div th:text="${error}" role="alert" class="alert alert-danger"></div>
+          </div>
+
+
+
+              
+
+              
+
+              <form method="POST" action="#" th:action="@{/createlot}" th:object="${lotForm}" >
                 <div class="form-row">
                   <div class="form-group col-md-8">
                     <label for="lotName">Lot name</label>
@@ -266,8 +278,9 @@
 
                 <input type="hidden" name="userId" th:value="${name}" />
                 <input type="hidden" name="auctionId" th:value="${currentAuctionId}" />
+                <input type="hidden" name="lotNumber" th:value="${nextLotNumber}" />
 
-                <button type="submit" class="btn btn-primary w-100">Start new auction</button>
+                <button type="submit" class="btn btn-primary w-100">Submit lot [[${nextLotNumber}]]</button>
               </form>
 
 
