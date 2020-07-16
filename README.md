@@ -1,0 +1,1 @@
+A Java / AWS project for the use of a local business. Gavelierplus makes it easier for an auction house to sell items, produce invoices and keep records.
