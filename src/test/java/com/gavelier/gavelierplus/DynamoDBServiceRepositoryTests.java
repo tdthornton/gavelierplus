@@ -29,7 +29,7 @@ abstract class PagesTest {
 }
 
 @RunWith(SpringRunner.class)
-public class PagesUtilTest extends PagesTest {
+public class DynamoDBServiceRepositoryTests extends PagesTest {
         
 
         private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
