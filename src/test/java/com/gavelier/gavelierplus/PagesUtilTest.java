@@ -4,6 +4,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -58,10 +59,16 @@ public class PagesUtilTest extends PagesTest {
 
 
                 //unordered result from db scan - returned from mock db
-                List<Auction> auctionsFromDatabase = List.of(auction3, auction1, auction2);
+                List<Auction> auctionsFromDatabase = new ArrayList<Auction>();
+                auctionsFromDatabase.add(auction3);
+                auctionsFromDatabase.add(auction1);
+                auctionsFromDatabase.add(auction2);
                 
                 //sorted return by service - our expected result
-                List<Auction> auctionsInDateOrder = List.of(auction1, auction2, auction3);
+                List<Auction> auctionsInDateOrder = new ArrayList<Auction>();
+                auctionsInDateOrder.add(auction1);
+                auctionsInDateOrder.add(auction2);
+                auctionsInDateOrder.add(auction3);
 
 
                 when(mockRepository.allAuctionsForUserId("user")).thenReturn(auctionsFromDatabase);
