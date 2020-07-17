@@ -42,7 +42,7 @@ public class DynamoDBService {
         dynamoDBRepository.insertIntoDynamoDB(auction);
 	}
 
-	public void createLot(@Valid Lot lot) {
+	public void createLot(Lot lot) {
         dynamoDBRepository.createLot(lot);
 	}
 
