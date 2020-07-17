@@ -3,10 +3,8 @@ package com.gavelier.gavelierplus;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.Principal;
-import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -24,7 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class Endpoints {
 
     @Autowired
-    DynamoDBRepository dynamoDBRepository;
+    DynamoDBService dynamoDBService;
 
     private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
 
@@ -37,15 +35,17 @@ public class Endpoints {
             LOGGER.info("Unable to bind: " + ef.getField());
         });
 
-        dynamoDBRepository.insertIntoDynamoDB(auction);
+        dynamoDBService.insertIntoDynamoDB(auction);
 
         return "redirect:/newauction";
 
     }
 
-    @PostMapping("/createlot")
+    @PostMapping(value = "/createlot", produces = "application/html")
     public String createLot(@Valid Lot lot, BindingResult bindingResult, Model model, Principal principal)
             throws UnsupportedEncodingException {
+
+        LOGGER.info("called create lot");
 
         if (bindingResult.hasErrors()) {
             LOGGER.info("Entered error branch in /createlot");
@@ -59,38 +59,13 @@ public class Endpoints {
 		}
 
 
-        LOGGER.info("called create lot");
-        LOGGER.info("Binding errors =  " + bindingResult.hasErrors());
         LOGGER.info("lot =  " + lot.toString());
 
-        List<FieldError> errorFields = bindingResult.getFieldErrors();
-
-        errorFields.forEach(ef -> {
-            LOGGER.info("Unable to bind: " + ef.getField());
-        });
-
-        dynamoDBRepository.createLot(lot);
+        dynamoDBService.createLot(lot);
         
 
         return "redirect:/lots?auctionId=" + lot.getAuctionId();
         
-    }
-
-    public List<Auction> getAllAuctionsForUserInDateOrder(String userId) {
-
-
-        List<Auction> allAuctionsForUser = dynamoDBRepository.allAuctionsForUserId(userId);
-
-
-        return allAuctionsForUser.stream().sorted(new Comparator<Auction>() {
-            public int compare(Auction o1, Auction o2) {
-                return o1.getDate().compareTo(o2.getDate());
-            }
-          })
-        .collect(Collectors.toList());
-
-
-
     }
 
 

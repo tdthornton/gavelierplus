@@ -52,7 +52,7 @@ public class DynamoDBRepository {
             throw e;
         }
 
-        LOGGER.info("LIST OF LOTS: ");
+        LOGGER.info("LIST OF LOTS FOR AUCTION " + auctionId + ": ");
         LOGGER.info(lots.toString());
     
         return lots;
