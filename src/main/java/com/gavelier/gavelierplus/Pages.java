@@ -29,7 +29,7 @@ public class Pages {
     private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
 
     @Autowired
-    DynamoDBService DynamoDBService;
+    DynamoDBService dynamoDBService;
 
 
     @GetMapping("/")
@@ -62,9 +62,12 @@ public class Pages {
     }
 
     @GetMapping("/dashboard")
-    public String dashboard(Principal principal, Model model) {
+    public String dashboard(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
 
         LOGGER.info("Access to dashboard page");
+
+        String currentAuctionId = queryParameters.get("auctionId");
+        model.addAttribute("currentAuctionId", currentAuctionId);
 
         model.addAttribute("name", principal.getName());
 
@@ -97,7 +100,7 @@ public class Pages {
 
         LOGGER.info("Called lots page, auction ID = " + currentAuctionId);
 
-        model.addAttribute("allAuctionsForUser", DynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+        model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
 
 
 
@@ -106,13 +109,13 @@ public class Pages {
         
 
         if (currentAuctionId != null && currentAuctionId != "null") {
-            Auction currentAuction = DynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+            Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
 
             if (currentAuction != null) { //if the auction exists, we can accept new lots for it, and show the existing ones.
 
 
                 //get all lots for this auction and sort the scan
-                List<Lot> allLotsForAuction = DynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
+                List<Lot> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
                         .sorted((lot1, lot2) -> Integer.compare(lot2.getLotNumber(), lot1.getLotNumber()))
                         .collect(toList());
 
@@ -154,7 +157,7 @@ public class Pages {
         model.addAttribute("name", principal.getName());
         model.addAttribute("error", queryParameters.get("error"));
 
-        Lot oldLotState = DynamoDBService.getOneLotById(lotId);
+        Lot oldLotState = dynamoDBService.getOneLotById(lotId);
 
         model.addAttribute("oldLot", oldLotState);
 
@@ -170,7 +173,7 @@ public class Pages {
         model.addAttribute("name", principal.getName());
         model.addAttribute("error", queryParameters.get("error"));
 
-        Lot oldLotState = DynamoDBService.getOneLotById(lotId);
+        Lot oldLotState = dynamoDBService.getOneLotById(lotId);
 
         model.addAttribute("oldLot", oldLotState);
 
@@ -179,20 +182,70 @@ public class Pages {
     }
 
     @GetMapping("/sellers")
-    public String sellers(Principal principal, Model model) {
+    public String sellers(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
 
-        LOGGER.info("Access to sellers page");
+        LOGGER.info("Access to sellers page by " + principal.getName());
 
-        model.addAttribute("name", principal.getName());
+        String currentAuctionId = queryParameters.get("auctionId");
 
-        return "sellers";
+        LOGGER.info("Called sellers page, auction ID = " + currentAuctionId);
+
+        model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+
+
+
+        model.addAttribute("error", queryParameters.get("error"));
+
+        
+
+        if (currentAuctionId != null && currentAuctionId != "null") {
+            Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+            if (currentAuction != null) { //if the auction exists, we can accept new sellers for it, and show the existing ones.
+
+
+                // //get all sellers for this auction and sort the scan
+                // List<Seller> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
+                //         .sorted((lot1, lot2) -> Integer.compare(lot2.getLotNumber(), lot1.getLotNumber()))
+                //         .collect(toList());
+
+                model.addAttribute("name", principal.getName());
+
+                // if (allLotsForAuction.size() == 0) {
+                //     model.addAttribute("nextLotNumber", 1);
+                // } else if (allLotsForAuction.size() == 1) {
+                //     model.addAttribute("nextLotNumber", 2);
+                // } else {
+                //     model.addAttribute("nextLotNumber", allLotsForAuction.size() + 1);
+                // }
+                model.addAttribute("currentAuctionId", currentAuctionId);
+                model.addAttribute("currentAuctionName", currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
+                // model.addAttribute("lotsForCurrentAuction", allLotsForAuction);
+
+                return "sellers";
+
+            } else {
+
+                //there is no valid auction provided
+                //so we show a page with no form, only the option to select an auction
+                return "emptysellers";
+
+            }
+        } else {
+            //there is no valid auction provided
+                //so we show a page with no form, only the option to select an auction
+            return "emptysellers";
+        }
 
     }
 
     @GetMapping("/buyers")
-    public String bueyrs(Principal principal, Model model) {
+    public String bueyrs(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
 
         LOGGER.info("Access to buyers page");
+
+        String currentAuctionId = queryParameters.get("auctionId");
+        model.addAttribute("currentAuctionId", currentAuctionId);
 
         model.addAttribute("name", principal.getName());
 
@@ -201,9 +254,12 @@ public class Pages {
     }
 
     @GetMapping("/auctioneering")
-    public String auctioneering(Principal principal, Model model) {
+    public String auctioneering(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
 
         LOGGER.info("Access to auctioneering page");
+
+        String currentAuctionId = queryParameters.get("auctionId");
+        model.addAttribute("currentAuctionId", currentAuctionId);
 
         model.addAttribute("name", principal.getName());
 
@@ -212,9 +268,12 @@ public class Pages {
     }
 
     @GetMapping("/documents")
-    public String documents(Principal principal, Model model) {
+    public String documents(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
 
         LOGGER.info("Access to documents page");
+
+        String currentAuctionId = queryParameters.get("auctionId");
+        model.addAttribute("currentAuctionId", currentAuctionId);
 
         model.addAttribute("name", principal.getName());
 
@@ -223,9 +282,11 @@ public class Pages {
     }
 
     @GetMapping("/archive")
-    public String archive(Principal principal, Model model) {
+    public String archive(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
 
         LOGGER.info("Access to archive page");
+        String currentAuctionId = queryParameters.get("auctionId");
+        model.addAttribute("currentAuctionId", currentAuctionId);
 
         model.addAttribute("name", principal.getName());
 

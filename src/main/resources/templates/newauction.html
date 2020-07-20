@@ -44,7 +44,7 @@
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item">
-        <a class="nav-link" href="/dashboard">
+        <a class="nav-link" th:href="@{'/dashboard?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Dashboard</span></a>
       </li>
@@ -54,7 +54,7 @@
 
       <!-- Nav Item - New Auction -->
       <li class="nav-item active">
-        <a class="nav-link" href="/newauction">
+        <a class="nav-link" th:href="@{'/newauction?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-plus-circle"></i>
           <span>New Auction</span></a>
       </li>
@@ -64,35 +64,35 @@
 
       <!-- Nav Item - Lots -->
       <li class="nav-item">
-        <a class="nav-link" href="/lots">
+        <a class="nav-link" th:href="@{'/lots?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-list-ol"></i>
           <span>Lots</span></a>
       </li>
 
       <!-- Nav Item - Sellers -->
       <li class="nav-item">
-        <a class="nav-link" href="/sellers">
+        <a class="nav-link" th:href="@{'/sellers?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-users"></i>
           <span>Sellers</span></a>
       </li>
 
       <!-- Nav Item - Buyers -->
       <li class="nav-item">
-        <a class="nav-link" href="/buyers">
+        <a class="nav-link" th:href="@{'/buyers?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-users"></i>
           <span>Buyers</span></a>
       </li>
 
       <!-- Nav Item - Auctioneering -->
       <li class="nav-item">
-        <a class="nav-link" href="/auctioneering">
+        <a class="nav-link" th:href="@{'/auctioneering?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-gavel"></i>
           <span>Auctioneering</span></a>
       </li>
 
       <!-- Nav Item - Auctioneering -->
       <li class="nav-item">
-        <a class="nav-link" href="/documents">
+        <a class="nav-link" th:href="@{'/documents?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-paperclip"></i>
           <span>Documents</span></a>
       </li>
@@ -102,7 +102,7 @@
 
       <!-- Nav Item - Archive -->
       <li class="nav-item">
-        <a class="nav-link" href="/archive">
+        <a class="nav-link" th:href="@{'/archive?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-table"></i>
           <span>Archive</span></a>
       </li>
