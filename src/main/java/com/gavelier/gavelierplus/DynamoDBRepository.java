@@ -23,8 +23,9 @@ public class DynamoDBRepository {
     @Autowired
     private DynamoDBMapper mapper;
 
-    public void saveAuction(Auction auction) {
+    public Auction saveAuction(Auction auction) {
         mapper.save(auction);
+        return auction;
     }
 
     public void createLot(Lot lot) {
@@ -80,5 +81,9 @@ public class DynamoDBRepository {
 
 
     }
+
+	public void deleteLot(Lot lot) {
+        mapper.delete(lot);
+	}
 
 }

@@ -228,7 +228,7 @@
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800" th:text="'Lots for ' + ${currentAuctionName}"></h1>
+          <h1 class="h3 mb-4 text-gray-800" th:text="'Are you sure you want to delete lot ' + ${oldLot.lotNumber} + '?'"></h1>
 
           <div class="row">
             <div class="col">
@@ -247,22 +247,22 @@
 
               
 
-              <form method="POST" action="#" th:action="@{/createlot}" th:object="${lotForm}" >
+              <form method="POST" action="#" th:action="@{/deletelot}" th:object="${deletelotform}" >
                 <div class="form-row">
                   <div class="form-group col-md-8">
                     <label for="lotName">Lot name</label>
-                    <input type="text" class="form-control" name="desc" id="desc" placeholder="Lot description"
-                      value="A mixed box of some things">
+                    <input type="text" class="form-control" name="desc" id="desc" 
+                      th:value="${oldLot.desc}" readonly>
                   </div>
                   <div class="form-group col-sm">
                     <label for="sellerNumber">Seller number</label>
-                    <input type="text" class="form-control" id="sellerNumber" value="1" name="sellerNumber">
+                    <input type="text" class="form-control" id="sellerNumber" th:value="${oldLot.sellerNumber}" name="sellerNumber" readonly>
                   </div>
                 </div>
                 <div class="form-row">
                   <div class="form-group col-sm">
                     <label for="estimate">Estimate</label>
-                    <input type="text" class="form-control" id="estimate" value="10" name="estimate">
+                    <input type="text" class="form-control" id="estimate" th:value="${oldLot.estimate}" name="estimate" readonly>
                     <br>
 
                   </div>
@@ -271,16 +271,17 @@
                   </div>
                   <div class="form-group col-sm">
                     <label for="reserve">Reserve</label>
-                    <input type="text" class="form-control" id="reserve" value="10" name="reserve">
+                    <input type="text" class="form-control" id="reserve" th:value="${oldLot.reserve}" name="reserve" readonly>
                     <br>
                   </div>
                 </div>
 
                 <input type="hidden" name="userId" th:value="${name}" />
-                <input type="hidden" name="auctionId" th:value="${currentAuctionId}" />
-                <input type="hidden" name="lotNumber" th:value="${nextLotNumber}" />
+                <input type="hidden" name="lotNumber" th:value="${oldLot.lotNumber}" />
+                <input type="hidden" name="id" th:value="${oldLot.id}" />
+                <input type="hidden" name="auctionId" th:value="${oldLot.auctionId}" />
 
-                <button type="submit" class="btn btn-primary w-100">Submit lot [[${nextLotNumber}]]</button>
+                <button type="submit" class="btn btn-primary w-100">Permanently delete lot</button>
               </form>
 
 
@@ -292,49 +293,6 @@
 
 
           <br><br><br>
-
-
-
-          <div class="card shadow mb-4">
-            <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">All lots for auction</h6>
-            </div>
-            <div class="card-body">
-              <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                  <thead>
-                    <tr>
-                      <th>Lot Number</th>
-                      <th>Lot Description</th>
-                      <th>Seller Number</th>
-                      <th>Estimate</th>
-                      <th>Reserve</th>
-                      <th>Edit</th>
-                      <th>Delete</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <th:block th:each="lot : ${lotsForCurrentAuction}">
-
-                      <tr>
-                        <td th:text="${lot.lotNumber}"></td>
-                        <td th:text="${lot.desc}"></td>
-                        <td th:text="${lot.sellerNumber}"></td>
-                        <td th:text="${lot.estimate}"></td>
-                        <td th:text="${lot.reserve}"></td>
-                        <td><a class="nav-link" th:href="@{'/editlot?lotId=' + ${lot.id}}"><i class="fa fa-edit"></i></a></td>
-                        <td><a class="nav-link" th:href="@{'/deletelotconfirmation?lotId=' + ${lot.id}}"><i class="fas fa-trash"></i></a></td>
-                      </tr>
-
-                    </th:block>
-                    
-
-
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
 
 
         </div>

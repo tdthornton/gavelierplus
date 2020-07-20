@@ -35,8 +35,8 @@ public class DynamoDBService {
 		return dynamoDBRepository.getAllLotsForAuction(currentAuctionId);
 	}
 
-	public void saveAuction(Auction auction) {
-        dynamoDBRepository.saveAuction(auction);
+	public Auction saveAuction(Auction auction) {
+        return dynamoDBRepository.saveAuction(auction);
     }
     
     public Lot getOneLotById(String lotId) {
@@ -49,6 +49,12 @@ public class DynamoDBService {
 
 	public void setRepository(DynamoDBRepository dynamoDBRepository2) {
         this.dynamoDBRepository=dynamoDBRepository2;
+	}
+
+	public void deleteLot(Lot lot) {
+
+        dynamoDBRepository.deleteLot(lot);
+        
 	}
 
 }

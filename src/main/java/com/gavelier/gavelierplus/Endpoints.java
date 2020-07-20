@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.validation.Valid;
@@ -17,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class Endpoints {
@@ -35,9 +37,9 @@ public class Endpoints {
             LOGGER.info("Unable to bind: " + ef.getField());
         });
 
-        dynamoDBService.saveAuction(auction);
+        Auction auctionSaved = dynamoDBService.saveAuction(auction);
 
-        return "redirect:/newauction";
+        return "redirect:/lots?auctionId=" + auctionSaved.getId();
 
     }
 
@@ -91,6 +93,17 @@ public class Endpoints {
         dynamoDBService.createLot(lot);
         
 
+        return "redirect:/lots?auctionId=" + lot.getAuctionId();
+        
+    }
+
+    @PostMapping(value = "/deletelot")
+    public String deleteLot(Lot lot) {
+
+        LOGGER.info("called delete lot for lot " + lot);
+
+        dynamoDBService.deleteLot(lot);
+        
         return "redirect:/lots?auctionId=" + lot.getAuctionId();
         
     }

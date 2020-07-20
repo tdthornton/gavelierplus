@@ -162,6 +162,22 @@ public class Pages {
 
     }
 
+    @GetMapping("/deletelotconfirmation")
+    public String deleteLot(@RequestParam String lotId, Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to delete lot page. Lot id " + lotId);
+
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("error", queryParameters.get("error"));
+
+        Lot oldLotState = DynamoDBService.getOneLotById(lotId);
+
+        model.addAttribute("oldLot", oldLotState);
+
+        return "deletelotconfirmation";
+
+    }
+
     @GetMapping("/sellers")
     public String sellers(Principal principal, Model model) {
 
