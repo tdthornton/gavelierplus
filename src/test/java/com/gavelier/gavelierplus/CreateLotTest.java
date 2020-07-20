@@ -177,4 +177,47 @@ public class CreateLotTest extends BaseControllerTest {
                                 new BasicNameValuePair("costToBuyer", lot.getCostToBuyer().toString()),
                                 new BasicNameValuePair("paymentToSeller", lot.getPaymentToSeller().toString()))));
         }
+
+        @Test
+        @WithMockUser
+        public void testUpdateLot() throws Exception {
+
+                // post a basic form submission to /createlot with a valid lot, and see that the
+                // successful redirect is performed without errors
+                // changes the lot description, posts it to /updatelot, and checks that the db service was called with the new lot
+
+                Lot lot = new Lot("auctionId_192328j", 1, 2, "A mixed box of interesting items.", "20", "",
+                                new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
+
+                MvcResult result = mockMvc
+                                .perform(post("/createlot").content(utilGetFormParamsForLot(lot)).with(csrf())
+                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                                                .andExpect(status().isFound())
+                                                .andReturn();
+
+                String redirectUrl = result.getResponse().getRedirectedUrl();
+
+                verify(mockService, times(1)).createLot(lot); //DynamoDB was called once to add our lot
+
+                Assert.assertTrue(redirectUrl.contains("/lots?auctionId=" + lot.getAuctionId())); //we are redirected to the right place
+                Assert.assertFalse(redirectUrl.contains("&error=")); //we are redirected without errors
+
+
+                //edit the lot
+                lot.setDesc("A mixed box with many interesting items.");
+
+                MvcResult updateResult = mockMvc
+                                .perform(post("/updatelot").content(utilGetFormParamsForLot(lot)).with(csrf())
+                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                                                .andExpect(status().isFound())
+                                                .andReturn();
+
+                String updateRedirectUrl = updateResult.getResponse().getRedirectedUrl();
+
+                verify(mockService, times(1)).createLot(lot); //DynamoDB was called once to add our lot (lot object checked has the updated string desc)
+
+                Assert.assertTrue(redirectUrl.contains("/lots?auctionId=" + lot.getAuctionId())); //we are redirected to the right place
+                Assert.assertFalse(redirectUrl.contains("&error=")); //we are redirected without errors
+
+        }
 }

@@ -3,9 +3,6 @@ package com.gavelier.gavelierplus;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.validation.Valid;
-
 import com.gavelier.gavelierplus.domain.Auction;
 import com.gavelier.gavelierplus.domain.Lot;
 
@@ -38,9 +35,13 @@ public class DynamoDBService {
 		return dynamoDBRepository.getAllLotsForAuction(currentAuctionId);
 	}
 
-	public void insertIntoDynamoDB(Auction auction) {
-        dynamoDBRepository.insertIntoDynamoDB(auction);
-	}
+	public Auction saveAuction(Auction auction) {
+        return dynamoDBRepository.saveAuction(auction);
+    }
+    
+    public Lot getOneLotById(String lotId) {
+        return dynamoDBRepository.getOneLotById(lotId);
+    }
 
 	public void createLot(Lot lot) {
         dynamoDBRepository.createLot(lot);
@@ -48,6 +49,12 @@ public class DynamoDBService {
 
 	public void setRepository(DynamoDBRepository dynamoDBRepository2) {
         this.dynamoDBRepository=dynamoDBRepository2;
+	}
+
+	public void deleteLot(Lot lot) {
+
+        dynamoDBRepository.deleteLot(lot);
+        
 	}
 
 }

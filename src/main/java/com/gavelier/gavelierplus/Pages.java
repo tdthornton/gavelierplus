@@ -105,7 +105,7 @@ public class Pages {
 
         
 
-        if (currentAuctionId != null) {
+        if (currentAuctionId != null && currentAuctionId != "null") {
             Auction currentAuction = DynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
 
             if (currentAuction != null) { //if the auction exists, we can accept new lots for it, and show the existing ones.
@@ -143,6 +143,38 @@ public class Pages {
                 //so we show a page with no form, only the option to select an auction
             return "emptylots";
         }
+
+    }
+
+    @GetMapping("/editlot")
+    public String editLot(@RequestParam String lotId, Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to update lot page. Lot id " + lotId);
+
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("error", queryParameters.get("error"));
+
+        Lot oldLotState = DynamoDBService.getOneLotById(lotId);
+
+        model.addAttribute("oldLot", oldLotState);
+
+        return "editlot";
+
+    }
+
+    @GetMapping("/deletelotconfirmation")
+    public String deleteLot(@RequestParam String lotId, Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to delete lot page. Lot id " + lotId);
+
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("error", queryParameters.get("error"));
+
+        Lot oldLotState = DynamoDBService.getOneLotById(lotId);
+
+        model.addAttribute("oldLot", oldLotState);
+
+        return "deletelotconfirmation";
 
     }
 

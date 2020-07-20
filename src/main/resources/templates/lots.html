@@ -228,7 +228,7 @@
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800" th:text="'Lots for   ' + ${currentAuctionName}"></h1>
+          <h1 class="h3 mb-4 text-gray-800" th:text="'Lots for ' + ${currentAuctionName}"></h1>
 
           <div class="row">
             <div class="col">
@@ -309,6 +309,8 @@
                       <th>Seller Number</th>
                       <th>Estimate</th>
                       <th>Reserve</th>
+                      <th>Edit</th>
+                      <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -320,6 +322,8 @@
                         <td th:text="${lot.sellerNumber}"></td>
                         <td th:text="${lot.estimate}"></td>
                         <td th:text="${lot.reserve}"></td>
+                        <td><a class="nav-link" th:href="@{'/editlot?lotId=' + ${lot.id}}"><i class="fa fa-edit"></i></a></td>
+                        <td><a class="nav-link" th:href="@{'/deletelotconfirmation?lotId=' + ${lot.id}}"><i class="fas fa-trash"></i></a></td>
                       </tr>
 
                     </th:block>

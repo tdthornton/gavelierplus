@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.validation.Valid;
@@ -17,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class Endpoints {
@@ -35,9 +37,9 @@ public class Endpoints {
             LOGGER.info("Unable to bind: " + ef.getField());
         });
 
-        dynamoDBService.insertIntoDynamoDB(auction);
+        Auction auctionSaved = dynamoDBService.saveAuction(auction);
 
-        return "redirect:/newauction";
+        return "redirect:/lots?auctionId=" + auctionSaved.getId();
 
     }
 
@@ -64,6 +66,44 @@ public class Endpoints {
         dynamoDBService.createLot(lot);
         
 
+        return "redirect:/lots?auctionId=" + lot.getAuctionId();
+        
+    }
+
+    @PostMapping(value = "/updatelot", produces = "application/html")
+    public String updateLot(@Valid Lot lot, BindingResult bindingResult, Model model, Principal principal)
+            throws UnsupportedEncodingException {
+
+        LOGGER.info("called update lot");
+
+        if (bindingResult.hasErrors()) {
+            LOGGER.info("Entered error branch in /updatelot");
+           
+            StringBuilder errors = new StringBuilder();
+
+            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+
+
+			return "redirect:/editlot?lotId=" + lot.getId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
+		}
+
+
+        LOGGER.info("updated lot =  " + lot.toString());
+
+        dynamoDBService.createLot(lot);
+        
+
+        return "redirect:/lots?auctionId=" + lot.getAuctionId();
+        
+    }
+
+    @PostMapping(value = "/deletelot")
+    public String deleteLot(Lot lot) {
+
+        LOGGER.info("called delete lot for lot " + lot);
+
+        dynamoDBService.deleteLot(lot);
+        
         return "redirect:/lots?auctionId=" + lot.getAuctionId();
         
     }

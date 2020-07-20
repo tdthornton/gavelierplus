@@ -23,8 +23,9 @@ public class DynamoDBRepository {
     @Autowired
     private DynamoDBMapper mapper;
 
-    public void insertIntoDynamoDB(Auction auction) {
+    public Auction saveAuction(Auction auction) {
         mapper.save(auction);
+        return auction;
     }
 
     public void createLot(Lot lot) {
@@ -33,6 +34,10 @@ public class DynamoDBRepository {
 
     public Auction getOneAuctionById(String auctionId, String userId) {
         return mapper.load(Auction.class, auctionId, userId);
+    }
+
+    public Lot getOneLotById(String lotId) {
+        return mapper.load(Lot.class, lotId);
     }
 
     public List<Lot> getAllLotsForAuction(String auctionId) {
@@ -76,5 +81,9 @@ public class DynamoDBRepository {
 
 
     }
+
+	public void deleteLot(Lot lot) {
+        mapper.delete(lot);
+	}
 
 }
