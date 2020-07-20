@@ -4,12 +4,10 @@ import static java.util.stream.Collectors.toList;
 
 import java.security.Principal;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +29,8 @@ public class Pages {
     private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
 
     @Autowired
-    DynamoDBRepository dynamoDBRepository;
+    DynamoDBService DynamoDBService;
+
 
     @GetMapping("/")
     public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name,
@@ -98,7 +97,7 @@ public class Pages {
 
         LOGGER.info("Called lots page, auction ID = " + currentAuctionId);
 
-        model.addAttribute("allAuctionsForUser", getAllAuctionsForUserInDateOrder(principal.getName()));
+        model.addAttribute("allAuctionsForUser", DynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
 
 
 
@@ -106,14 +105,14 @@ public class Pages {
 
         
 
-        if (currentAuctionId != null) {
-            Auction currentAuction = dynamoDBRepository.getOneAuctionById(currentAuctionId, principal.getName());
+        if (currentAuctionId != null && currentAuctionId != "null") {
+            Auction currentAuction = DynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
 
             if (currentAuction != null) { //if the auction exists, we can accept new lots for it, and show the existing ones.
 
 
                 //get all lots for this auction and sort the scan
-                List<Lot> allLotsForAuction = dynamoDBRepository.getAllLotsForAuction(currentAuctionId).stream()
+                List<Lot> allLotsForAuction = DynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
                         .sorted((lot1, lot2) -> Integer.compare(lot2.getLotNumber(), lot1.getLotNumber()))
                         .collect(toList());
 
@@ -144,6 +143,38 @@ public class Pages {
                 //so we show a page with no form, only the option to select an auction
             return "emptylots";
         }
+
+    }
+
+    @GetMapping("/editlot")
+    public String editLot(@RequestParam String lotId, Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to update lot page. Lot id " + lotId);
+
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("error", queryParameters.get("error"));
+
+        Lot oldLotState = DynamoDBService.getOneLotById(lotId);
+
+        model.addAttribute("oldLot", oldLotState);
+
+        return "editlot";
+
+    }
+
+    @GetMapping("/deletelotconfirmation")
+    public String deleteLot(@RequestParam String lotId, Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to delete lot page. Lot id " + lotId);
+
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("error", queryParameters.get("error"));
+
+        Lot oldLotState = DynamoDBService.getOneLotById(lotId);
+
+        model.addAttribute("oldLot", oldLotState);
+
+        return "deletelotconfirmation";
 
     }
 
@@ -202,16 +233,6 @@ public class Pages {
 
     }
 
-    public List<Auction> getAllAuctionsForUserInDateOrder(String userId) {
-
-        List<Auction> allAuctionsForUser = dynamoDBRepository.allAuctionsForUserId(userId);
-
-        return allAuctionsForUser.stream().distinct().sorted(new Comparator<Auction>() {
-            public int compare(Auction o1, Auction o2) {
-                return o1.getDate().compareTo(o2.getDate());
-            }
-        }).collect(Collectors.toList());
-
-    }
+    
 
 }
