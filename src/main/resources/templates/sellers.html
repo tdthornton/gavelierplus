@@ -294,26 +294,22 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>Lot Number</th>
-                      <th>Lot Description</th>
                       <th>Seller Number</th>
-                      <th>Estimate</th>
-                      <th>Reserve</th>
-                      <th>Edit</th>
-                      <th>Delete</th>
+                      <th>Seller name</th>
+                      <th>Seller Contact number</th>
+                      <th>Seller address</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <th:block th:each="lot : ${lotsForCurrentAuction}">
+                    <th:block th:each="seller : ${sellersForCurrentAuction}">
 
                       <tr>
-                        <td th:text="${lot.lotNumber}"></td>
-                        <td th:text="${lot.desc}"></td>
-                        <td th:text="${lot.sellerNumber}"></td>
-                        <td th:text="${lot.estimate}"></td>
-                        <td th:text="${lot.reserve}"></td>
-                        <td><a class="nav-link" th:href="@{'/editlot?lotId=' + ${lot.id}}"><i class="fa fa-edit"></i></a></td>
-                        <td><a class="nav-link" th:href="@{'/deletelotconfirmation?lotId=' + ${lot.id}}"><i class="fas fa-trash"></i></a></td>
+                        <td th:text="${seller.sellerNumber}"></td>
+                        <td th:text="${seller.sellerName}"></td>
+                        <td th:text="${seller.sellerContactNumber}"></td>
+                        <td th:text="${seller.sellerAddress}"></td>
+                        <!-- <td><a class="nav-link" th:href="@{'/editlot?lotId=' + ${lot.id}}"><i class="fa fa-edit"></i></a></td>
+                        <td><a class="nav-link" th:href="@{'/deletelotconfirmation?lotId=' + ${lot.id}}"><i class="fas fa-trash"></i></a></td> -->
                       </tr>
 
                     </th:block>

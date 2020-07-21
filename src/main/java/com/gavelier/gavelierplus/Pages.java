@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 
 import com.gavelier.gavelierplus.domain.Auction;
 import com.gavelier.gavelierplus.domain.Lot;
+import com.gavelier.gavelierplus.domain.Seller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -204,23 +205,23 @@ public class Pages {
             if (currentAuction != null) { //if the auction exists, we can accept new sellers for it, and show the existing ones.
 
 
-                // //get all sellers for this auction and sort the scan
-                // List<Seller> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
-                //         .sorted((lot1, lot2) -> Integer.compare(lot2.getLotNumber(), lot1.getLotNumber()))
-                //         .collect(toList());
+                //get all sellers for this auction and sort the scan
+                List<Seller> allSellers = dynamoDBService.getAllSellersForAuction(currentAuctionId).stream()
+                        .sorted((lot1, lot2) -> Integer.compare(lot2.getSellerNumber(), lot1.getSellerNumber()))
+                        .collect(toList());
 
                 model.addAttribute("name", principal.getName());
 
-                // if (allLotsForAuction.size() == 0) {
-                //     model.addAttribute("nextLotNumber", 1);
-                // } else if (allLotsForAuction.size() == 1) {
-                //     model.addAttribute("nextLotNumber", 2);
-                // } else {
-                //     model.addAttribute("nextLotNumber", allLotsForAuction.size() + 1);
-                // }
+                if (allSellers.size() == 0) {
+                    model.addAttribute("nextSellerNumber", 1);
+                } else if (allSellers.size() == 1) {
+                    model.addAttribute("nextSellerNumber", 2);
+                } else {
+                    model.addAttribute("nextSellerNumber", allSellers.size() + 1);
+                }
                 model.addAttribute("currentAuctionId", currentAuctionId);
                 model.addAttribute("currentAuctionName", currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
-                // model.addAttribute("lotsForCurrentAuction", allLotsForAuction);
+                model.addAttribute("sellersForCurrentAuction", allSellers);
 
                 return "sellers";
 
@@ -233,7 +234,7 @@ public class Pages {
             }
         } else {
             //there is no valid auction provided
-                //so we show a page with no form, only the option to select an auction
+            //so we show a page with no form, only the option to select an auction
             return "emptysellers";
         }
 

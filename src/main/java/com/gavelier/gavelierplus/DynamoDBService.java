@@ -3,8 +3,12 @@ package com.gavelier.gavelierplus;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.validation.Valid;
+
 import com.gavelier.gavelierplus.domain.Auction;
 import com.gavelier.gavelierplus.domain.Lot;
+import com.gavelier.gavelierplus.domain.Seller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +37,10 @@ public class DynamoDBService {
 
 	public List<Lot> getAllLotsForAuction(String currentAuctionId) {
 		return dynamoDBRepository.getAllLotsForAuction(currentAuctionId);
+    }
+    
+    public List<Seller> getAllSellersForAuction(String currentAuctionId) {
+		return dynamoDBRepository.getAllSellersFromAuction(currentAuctionId);
 	}
 
 	public Auction saveAuction(Auction auction) {
@@ -55,6 +63,10 @@ public class DynamoDBService {
 
         dynamoDBRepository.deleteLot(lot);
         
+	}
+
+	public void createSeller(Seller seller) {
+        dynamoDBRepository.save(seller);
 	}
 
 }

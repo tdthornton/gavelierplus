@@ -102,8 +102,6 @@ public class LotsPageTest extends LotsPageTestController {
 
                 String pageHtml = result.getResponse().getContentAsString();
 
-                LOGGER.info(pageHtml);
-
                 Assert.assertTrue(pageHtml.contains("Lots for Rome auction house")); //the auction is loaded properly
                 Assert.assertTrue(pageHtml.contains("<td>A mixed box, some interesting items in there.</td>"));
                 Assert.assertTrue(pageHtml.contains("<td>Set of watches.</td>"));
