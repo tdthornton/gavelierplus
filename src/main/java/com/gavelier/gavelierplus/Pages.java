@@ -206,9 +206,7 @@ public class Pages {
 
 
                 //get all sellers for this auction and sort the scan
-                List<Seller> allSellers = dynamoDBService.getAllSellersForAuction(currentAuctionId).stream()
-                        .sorted((lot1, lot2) -> Integer.compare(lot2.getSellerNumber(), lot1.getSellerNumber()))
-                        .collect(toList());
+                List<Seller> allSellers = dynamoDBService.getAllSellersForAuction(currentAuctionId);
 
                 model.addAttribute("name", principal.getName());
 

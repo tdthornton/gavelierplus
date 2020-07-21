@@ -2,13 +2,14 @@ package com.gavelier.gavelierplus;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import javax.validation.Valid;
 
 import com.gavelier.gavelierplus.domain.Auction;
 import com.gavelier.gavelierplus.domain.Lot;
 import com.gavelier.gavelierplus.domain.Seller;
+
+import static java.util.stream.Collectors.toList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,8 @@ public class DynamoDBService {
 
     @Autowired
     DynamoDBRepository dynamoDBRepository;
+
+    private final static Logger LOGGER = Logger.getLogger(DynamoDBService.class.getName());
 
     public List<Auction> getAllAuctionsForUserInDateOrder(String userId) {
 
@@ -40,7 +43,9 @@ public class DynamoDBService {
     }
     
     public List<Seller> getAllSellersForAuction(String currentAuctionId) {
-		return dynamoDBRepository.getAllSellersFromAuction(currentAuctionId);
+		return dynamoDBRepository.getAllSellersFromAuction(currentAuctionId).stream()
+        .sorted((lot1, lot2) -> Integer.compare(lot2.getSellerNumber(), lot1.getSellerNumber()))
+        .collect(toList());
 	}
 
 	public Auction saveAuction(Auction auction) {
@@ -66,7 +71,19 @@ public class DynamoDBService {
 	}
 
 	public void createSeller(Seller seller) {
-        dynamoDBRepository.save(seller);
+
+        List<Seller> allExistingSellers = getAllSellersForAuction(seller.getAuctionId());
+
+        if(!allExistingSellers.stream().filter(existingSeller -> seller.getSellerNumber()==existingSeller.getSellerNumber()).findFirst().isPresent()) {
+            dynamoDBRepository.save(seller);
+        } else {
+            LOGGER.info("Seller number repeated " + seller);
+        }
+
+        
+
+
+
 	}
 
 }

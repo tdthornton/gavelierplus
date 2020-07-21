@@ -20,7 +20,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class DynamoDBRepository {
 
-    private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(DynamoDBRepository.class.getName());
 
     @Autowired
     private DynamoDBMapper mapper;

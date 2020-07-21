@@ -25,7 +25,7 @@ public class Endpoints {
     @Autowired
     DynamoDBService dynamoDBService;
 
-    private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(Endpoints.class.getName());
 
     @PostMapping("/createauction")
     public String greeting(Auction auction, BindingResult bindingResult) {
