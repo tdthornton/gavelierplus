@@ -4,13 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.validation.Valid;
 
 import com.gavelier.gavelierplus.domain.Auction;
 import com.gavelier.gavelierplus.domain.Lot;
+import com.gavelier.gavelierplus.domain.Seller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,7 +18,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class Endpoints {
@@ -26,7 +25,7 @@ public class Endpoints {
     @Autowired
     DynamoDBService dynamoDBService;
 
-    private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(Endpoints.class.getName());
 
     @PostMapping("/createauction")
     public String greeting(Auction auction, BindingResult bindingResult) {
@@ -67,6 +66,33 @@ public class Endpoints {
         
 
         return "redirect:/lots?auctionId=" + lot.getAuctionId();
+        
+    }
+
+    @PostMapping(value = "/createseller", produces = "application/html")
+    public String createseller(@Valid Seller seller, BindingResult bindingResult, Model model, Principal principal)
+            throws UnsupportedEncodingException {
+
+        LOGGER.info("called create seller");
+
+        if (bindingResult.hasErrors()) {
+            LOGGER.info("Entered error branch in /createseller");
+           
+            StringBuilder errors = new StringBuilder();
+
+            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+
+
+			return "redirect:/sellers?auctionId=" + seller.getAuctionId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
+		}
+
+
+        LOGGER.info("seller =  " + seller.toString());
+
+        dynamoDBService.createSeller(seller);
+        
+
+        return "redirect:/sellers?auctionId=" + seller.getAuctionId();
         
     }
 

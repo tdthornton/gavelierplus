@@ -106,7 +106,7 @@ public class LotsPageTest extends LotsPageTestController {
                 Assert.assertTrue(pageHtml.contains("<td>A mixed box, some interesting items in there.</td>"));
                 Assert.assertTrue(pageHtml.contains("<td>Set of watches.</td>"));
                 Assert.assertTrue(pageHtml.contains("<td>Old lawnmower, no longer working.</td>")); //lots for the auction are loaded properly
-                Assert.assertTrue(pageHtml.contains("<a class=\"dropdown-item\" href=\"/lots?auctionId=test_auction_88839\">Rome auction house06-Jan-2018</a>")); //options to switch auction are loaded properly
+                Assert.assertTrue(pageHtml.contains("<a class=\"dropdown-item\" href=\"/lots?auctionId=test_auction_88839\">Rome auction house - 06-Jan-2018</a>")); //options to switch auction are loaded properly
 
         }
 

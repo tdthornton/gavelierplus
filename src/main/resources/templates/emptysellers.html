@@ -13,7 +13,9 @@
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+    rel="stylesheet">
 
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
@@ -68,7 +70,7 @@
       </li>
 
       <!-- Nav Item - Sellers -->
-      <li class="nav-item">
+      <li class="nav-item active">
         <a class="nav-link" th:href="@{'/sellers?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-users"></i>
           <span>Sellers</span></a>
@@ -89,7 +91,7 @@
       </li>
 
       <!-- Nav Item - Auctioneering -->
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" th:href="@{'/documents?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-paperclip"></i>
           <span>Documents</span></a>
@@ -132,17 +134,27 @@
 
           <!-- Topbar dropdown -->
           <div class="dropdown w-100">
-            <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Auctions
+            <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Switch Auction
             </button>
+
+
             <div class="dropdown-menu text-center" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 21st October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 14th October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 7th October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 21st October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 14th October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 7th October, 2019</a>
+
+              <th:block th:each="auction : ${allAuctionsForUser}">
+
+
+
+                <a class="dropdown-item" th:href="@{/sellers(auctionId=${auction.id})}"
+                  th:text="${auction.inputCompanyName + #dates.format(auction.date, 'dd-MMM-yyyy')}"></a>
+
+              </th:block>
             </div>
+
+
+
+
           </div>
 
           <!-- Topbar Navbar -->
@@ -150,14 +162,17 @@
 
             <!-- Nav Item - Search Dropdown (Visible Only XS) -->
             <li class="nav-item dropdown no-arrow d-sm-none">
-              <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-search fa-fw"></i>
               </a>
               <!-- Dropdown - Messages -->
-              <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
+              <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                aria-labelledby="searchDropdown">
                 <form class="form-inline mr-auto w-100 navbar-search">
                   <div class="input-group">
-                    <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                    <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                      aria-label="Search" aria-describedby="basic-addon2">
                     <div class="input-group-append">
                       <button class="btn btn-primary" type="button">
                         <i class="fas fa-search fa-sm"></i>
@@ -168,16 +183,17 @@
               </div>
             </li>
 
-            
+
 
             <!-- Nav Item - Messages -->
-            
+
 
             <div class="topbar-divider d-none d-sm-block"></div>
 
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">[[${name}]]</span>
                 <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
               </a>
@@ -212,10 +228,31 @@
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800" th:text="'Documents for ' + ${currentAuctionName}"></h1>
+          <h1 class="h3 mb-4 text-gray-800">Select an auction from the menu to see and add sellers.</h1>
+
+          <div class="row">
+            <div class="col">
+
+            </div>
+            <div class="col-11">
 
 
-          <p class="aclass" th:text="'asdfadf'" />
+             <div th:if="${error}">
+              <div th:text="${error}" role="alert" class="alert alert-danger"></div>
+          </div>
+
+
+
+              
+
+              
+
+              
+
+
+
+          
+
 
         </div>
         <!-- /.container-fluid -->
@@ -245,7 +282,8 @@
   </a>
 
   <!-- Logout Modal-->
-  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
