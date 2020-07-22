@@ -127,7 +127,7 @@ public class Pages {
                     if (highestLotNumber.getLotNumber() == 1) {
                         model.addAttribute("nextLotNumber", 2);
                     } else {
-                        model.addAttribute("nextLotNumber", highestLotNumber.getLotNumber()+1);
+                        model.addAttribute("nextLotNumber", highestLotNumber.getLotNumber() + 1);
                     }
 
                 }
@@ -204,6 +204,32 @@ public class Pages {
 
     }
 
+    @GetMapping("/deletesellerconfirmation")
+    public String deleteSellerConfirmation(@RequestParam String sellerId, Principal principal, Model model,
+            @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to delete seller page. Seller id " + sellerId);
+
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("error", queryParameters.get("error"));
+
+        Seller oldSellerState = dynamoDBService.getOneSeller(sellerId);
+
+        if (oldSellerState!=null && oldSellerState.getId()!=null) {
+
+            model.addAttribute("oldSeller", oldSellerState);
+
+            return "deletesellerconfirmation";
+
+        } else {
+
+            return "redirect:/sellers";
+        }
+
+        
+
+    }
+
     @GetMapping("/sellers")
     public String sellers(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
 
@@ -230,10 +256,16 @@ public class Pages {
 
                 if (allSellers.size() == 0) {
                     model.addAttribute("nextSellerNumber", 1);
-                } else if (allSellers.size() == 1) {
-                    model.addAttribute("nextSellerNumber", 2);
                 } else {
-                    model.addAttribute("nextSellerNumber", allSellers.size() + 1);
+
+                    Seller highestSellerNumber = allSellers.stream()
+                            .max(Comparator.comparing(seller -> seller.getSellerNumber())).get();
+                    if (highestSellerNumber.getSellerNumber() == 1) {
+                        model.addAttribute("nextSellerNumber", 2);
+                    } else {
+                        model.addAttribute("nextSellerNumber", highestSellerNumber.getSellerNumber() + 1);
+                    }
+
                 }
                 model.addAttribute("currentAuctionId", currentAuctionId);
                 model.addAttribute("currentAuctionName",

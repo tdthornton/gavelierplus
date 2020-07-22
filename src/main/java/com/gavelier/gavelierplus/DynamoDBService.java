@@ -93,6 +93,11 @@ public class DynamoDBService {
 	public Seller getOneSeller(String sellerId) {
 		return dynamoDBRepository.getOneSeller(sellerId);
 	}
+
+	public void deleteSeller(Seller seller) {
+        LOGGER.info("Calling repository to delete seller " + seller);
+        dynamoDBRepository.deleteSeller(seller);
+	}
     
 
 

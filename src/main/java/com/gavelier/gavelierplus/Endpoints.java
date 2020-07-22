@@ -161,5 +161,16 @@ public class Endpoints {
         
     }
 
+    @PostMapping(value = "/deleteseller")
+    public String deleterSeller(Seller seller) {
+
+        LOGGER.info("called delete seller for seller " + seller);
+
+        dynamoDBService.deleteSeller(seller);
+        
+        return "redirect:/sellers?auctionId=" + seller.getAuctionId();
+        
+    }
+
 
 }

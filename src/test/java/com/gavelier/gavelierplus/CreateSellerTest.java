@@ -120,7 +120,7 @@ public class CreateSellerTest extends SellerControllerTest {
 
         }
 
-        private String utilGetFormParamsForSeller(Seller seller)
+        public static String utilGetFormParamsForSeller(Seller seller)
                         throws ParseException, UnsupportedEncodingException, IOException {
                 return EntityUtils.toString(new UrlEncodedFormEntity(Arrays.asList(
                                 new BasicNameValuePair("id", seller.getId()),

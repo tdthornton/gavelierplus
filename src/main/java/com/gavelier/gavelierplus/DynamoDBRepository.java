@@ -83,7 +83,7 @@ public class DynamoDBRepository {
             throw e;
         }
 
-        LOGGER.info("LIST OF LOTS FOR AUCTION " + auctionId + ": ");
+        LOGGER.info("LIST OF SELLERS FOR AUCTION " + auctionId + ": ");
         LOGGER.info(sellers.toString());
     
         return sellers;
@@ -118,6 +118,10 @@ public class DynamoDBRepository {
 
 	public Seller getOneSeller(String sellerId) {
 		return mapper.load(Seller.class, sellerId);
+	}
+
+	public void deleteSeller(Seller seller) {
+        mapper.delete(seller);
 	}
 
 }
