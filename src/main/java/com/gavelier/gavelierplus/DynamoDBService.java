@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.gavelier.gavelierplus.domain.Auction;
+import com.gavelier.gavelierplus.domain.Buyer;
 import com.gavelier.gavelierplus.domain.Lot;
 import com.gavelier.gavelierplus.domain.Seller;
 
@@ -44,7 +45,13 @@ public class DynamoDBService {
     
     public List<Seller> getAllSellersForAuction(String currentAuctionId) {
 		return dynamoDBRepository.getAllSellersFromAuction(currentAuctionId).stream()
-        .sorted((lot1, lot2) -> Integer.compare(lot2.getSellerNumber(), lot1.getSellerNumber()))
+        .sorted((seller1, seller2) -> Integer.compare(seller1.getSellerNumber(), seller2.getSellerNumber()))
+        .collect(toList());
+    }
+    
+    public List<Buyer> getAllBuyersForAuction(String currentAuctionId) {
+		return dynamoDBRepository.getAllBuyersFromAuction(currentAuctionId).stream()
+        .sorted((buyer1, buyer2) -> Integer.compare(buyer2.getBuyerNumber(), buyer1.getBuyerNumber()))
         .collect(toList());
 	}
 
@@ -79,6 +86,35 @@ public class DynamoDBService {
             dynamoDBRepository.save(seller);
         } else {
             LOGGER.info("Seller number repeated " + seller);
+        }
+
+
+    }
+
+    public void updateBuyer(Buyer buyer) {
+        //In the case of updating the buyer, it already exists with this number, so we just pass the object on
+        //to the same method. Replacing is handled by the repository/mapper
+        dynamoDBRepository.save(buyer);
+    }
+
+	public Buyer getOneBuyer(String buyerId) {
+		return dynamoDBRepository.getOneBuyer(buyerId);
+	}
+
+	public void deleteSeller(Buyer buyer) {
+        LOGGER.info("Calling repository to delete buyer " + buyer);
+        dynamoDBRepository.deleteBuyer(buyer);
+    }
+    
+    public void createBuyer(Buyer buyer) {
+        //Creating a new buyer: in case of double form submission, we have to filter the existing buyers
+        //to check that we are not saving a buyer with a duplicate number
+        List<Buyer> allExistingSellers = getAllBuyersForAuction(buyer.getAuctionId());
+
+        if(!allExistingSellers.stream().filter(existingBuyer -> buyer.getBuyerNumber()==existingBuyer.getBuyerNumber()).findFirst().isPresent()) {
+            dynamoDBRepository.save(buyer);
+        } else {
+            LOGGER.info("Buyer number repeated " + buyer);
         }
 
 

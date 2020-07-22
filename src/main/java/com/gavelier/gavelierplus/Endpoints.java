@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import javax.validation.Valid;
 
 import com.gavelier.gavelierplus.domain.Auction;
+import com.gavelier.gavelierplus.domain.Buyer;
 import com.gavelier.gavelierplus.domain.Lot;
 import com.gavelier.gavelierplus.domain.Seller;
 
@@ -93,6 +94,33 @@ public class Endpoints {
         
 
         return "redirect:/sellers?auctionId=" + seller.getAuctionId();
+        
+    }
+
+    @PostMapping(value = "/createbuyer", produces = "application/html")
+    public String createBuyer(@Valid Buyer buyer, BindingResult bindingResult, Model model, Principal principal)
+            throws UnsupportedEncodingException {
+
+        LOGGER.info("called create buyer");
+
+        if (bindingResult.hasErrors()) {
+            LOGGER.info("Entered error branch in /createseller");
+           
+            StringBuilder errors = new StringBuilder();
+
+            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+
+
+			return "redirect:/buyers?auctionId=" + buyer.getAuctionId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
+		}
+
+
+        LOGGER.info("buyer =  " + buyer.toString());
+
+        dynamoDBService.createBuyer(buyer);
+        
+
+        return "redirect:/buyers?auctionId=" + buyer.getAuctionId();
         
     }
 
