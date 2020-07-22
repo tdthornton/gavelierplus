@@ -166,6 +166,7 @@ public class Pages {
         Lot oldLotState = dynamoDBService.getOneLotById(lotId);
 
         model.addAttribute("oldLot", oldLotState);
+        model.addAttribute("currentAuctionId", oldLotState.getAuctionId());
 
         return "editlot";
 
@@ -175,7 +176,7 @@ public class Pages {
     public String editSeller(@RequestParam String sellerId, Principal principal, Model model,
             @RequestParam Map<String, String> queryParameters) {
 
-        LOGGER.info("Access to update seller page. Lot id " + sellerId);
+        LOGGER.info("Access to update seller page. Seller id " + sellerId);
 
         model.addAttribute("name", principal.getName());
         model.addAttribute("error", queryParameters.get("error"));
@@ -183,8 +184,27 @@ public class Pages {
         Seller oldSellerState = dynamoDBService.getOneSeller(sellerId);
 
         model.addAttribute("oldSeller", oldSellerState);
+        model.addAttribute("currentAuctionId", oldSellerState.getAuctionId());
 
         return "editseller";
+
+    }
+
+    @GetMapping("/editbuyer")
+    public String editBuyer(@RequestParam String buyerId, Principal principal, Model model,
+            @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to update buyer page. Buyer id " + buyerId);
+
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("error", queryParameters.get("error"));
+
+        Buyer oldBuyerState = dynamoDBService.getOneBuyer(buyerId);
+
+        model.addAttribute("oldBuyer", oldBuyerState);
+        model.addAttribute("currentAuctionId", oldBuyerState.getAuctionId());
+
+        return "editbuyer";
 
     }
 
@@ -200,6 +220,7 @@ public class Pages {
         Lot oldLotState = dynamoDBService.getOneLotById(lotId);
 
         model.addAttribute("oldLot", oldLotState);
+        model.addAttribute("currentAuctionId", oldLotState.getAuctionId());
 
         return "deletelotconfirmation";
 
@@ -219,12 +240,40 @@ public class Pages {
         if (oldSellerState!=null && oldSellerState.getId()!=null) {
 
             model.addAttribute("oldSeller", oldSellerState);
+            model.addAttribute("currentAuctionId", oldSellerState.getAuctionId());
 
             return "deletesellerconfirmation";
 
         } else {
 
             return "redirect:/sellers";
+        }
+
+        
+
+    }
+
+    @GetMapping("/deletebuyerconfirmation")
+    public String deleteBuyerConfirmation(@RequestParam String buyerId, Principal principal, Model model,
+            @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to delete buyer page. buyer id " + buyerId);
+
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("error", queryParameters.get("error"));
+
+        Buyer oldBuyerState = dynamoDBService.getOneBuyer(buyerId);
+
+        if (oldBuyerState!=null && oldBuyerState.getId()!=null) {
+
+            model.addAttribute("oldBuyer", oldBuyerState);
+            model.addAttribute("currentAuctionId", oldBuyerState.getAuctionId());
+
+            return "deletebuyerconfirmation";
+
+        } else {
+
+            return "redirect:/buyers";
         }
 
         

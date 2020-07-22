@@ -101,7 +101,7 @@ public class DynamoDBService {
 		return dynamoDBRepository.getOneBuyer(buyerId);
 	}
 
-	public void deleteSeller(Buyer buyer) {
+	public void deleteBuyer(Buyer buyer) {
         LOGGER.info("Calling repository to delete buyer " + buyer);
         dynamoDBRepository.deleteBuyer(buyer);
     }

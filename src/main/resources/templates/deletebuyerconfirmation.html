@@ -68,14 +68,14 @@
       </li>
 
       <!-- Nav Item - Sellers -->
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" th:href="@{'/sellers?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-users"></i>
           <span>Sellers</span></a>
       </li>
 
       <!-- Nav Item - Buyers -->
-      <li class="nav-item">
+      <li class="nav-item active">
         <a class="nav-link" th:href="@{'/buyers?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-users"></i>
           <span>Buyers</span></a>
@@ -203,7 +203,7 @@
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800" th:text="'Edit seller ' + ${oldSeller.sellerNumber}"></h1>
+          <h1 class="h3 mb-4 text-gray-800" th:text="'Are you sure you want to delete buyer ' + ${oldBuyer.buyerNumber} + '?'"></h1>
 
           <div class="row">
             <div class="col">
@@ -222,33 +222,33 @@
 
               
 
-              <form method="POST" action="#" th:action="@{/updateseller}" th:object="${updateSellerForm}" >
+              <form method="POST" action="#" th:action="@{/deletebuyer}" th:object="${deleteBuyerForm}" >
                 <div class="form-row">
                   <div class="form-group col-md-8">
-                    <label for="lotName">Seller name</label>
-                    <input type="text" class="form-control" name="sellerName" id="sellerName" placeholder="Seller name"
-                    th:value="${oldSeller.sellerName}">
+                    <label for="lotName">Buyer name</label>
+                    <input type="text" class="form-control" name="buyerName" id="buyerName" placeholder="Buyer name"
+                    th:value="${oldBuyer.buyerName}" readonly>
                   </div>
                   <div class="form-group col-sm">
-                    <label for="sellerNumber">Seller contact number</label>
-                    <input type="text" class="form-control" id="sellerContactNumber" th:value="${oldSeller.sellerContactNumber}" name="sellerContactNumber">
+                    <label for="buyerNumber">Buyer contact number</label>
+                    <input type="text" class="form-control" id="buyerContactNumber" th:value="${oldBuyer.buyerContactNumber}" name="buyerContactNumber" readonly>
                   </div>
                 </div>
                 <div class="form-row">
                   <div class="form-group col-sm">
-                    <label for="estimate">Seller address</label>
-                    <input type="text" class="form-control" id="sellerAddress" th:value="${oldSeller.sellerAddress}" name="sellerAddress">
+                    <label for="estimate">Buyer address</label>
+                    <input type="text" class="form-control" id="buyerAddress" th:value="${oldBuyer.buyerAddress}" name="buyerAddress" readonly>
                     <br>
 
                   </div>
                 </div>
 
                 <input type="hidden" name="userId" th:value="${name}" />
-                <input type="hidden" name="sellerNumber" th:value="${oldSeller.sellerNumber}" />
-                <input type="hidden" name="id" th:value="${oldSeller.id}" />
-                <input type="hidden" name="auctionId" th:value="${oldSeller.auctionId}" />
+                <input type="hidden" name="buyerNumber" th:value="${oldBuyer.buyerNumber}" />
+                <input type="hidden" name="id" th:value="${oldBuyer.id}" />
+                <input type="hidden" name="auctionId" th:value="${oldBuyer.auctionId}" />
 
-                <button type="submit" class="btn btn-primary w-100">Submit updated seller</button>
+                <button type="submit" class="btn btn-primary w-100">Delete buyer</button>
               </form>
 
 
