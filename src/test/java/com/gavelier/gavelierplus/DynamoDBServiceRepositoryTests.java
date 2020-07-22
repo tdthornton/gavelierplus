@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.logging.Logger;
 
 import com.gavelier.gavelierplus.domain.Auction;
 
@@ -31,8 +30,6 @@ abstract class PagesTest {
 @RunWith(SpringRunner.class)
 public class DynamoDBServiceRepositoryTests extends PagesTest {
         
-
-        private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
 
         @Autowired
         DynamoDBService service;

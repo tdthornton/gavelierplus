@@ -144,7 +144,7 @@ public class Endpoints {
 
         LOGGER.info("updated lot =  " + lot.toString());
 
-        dynamoDBService.createLot(lot);
+        dynamoDBService.updateLot(lot);
         
 
         return "redirect:/lots?auctionId=" + lot.getAuctionId();
@@ -178,6 +178,33 @@ public class Endpoints {
         
     }
 
+    @PostMapping(value = "/updatebuyer", produces = "application/html")
+    public String updateBuyer(@Valid Buyer buyer, BindingResult bindingResult, Model model, Principal principal)
+            throws UnsupportedEncodingException {
+
+        LOGGER.info("called update buyer");
+
+        if (bindingResult.hasErrors()) {
+            LOGGER.info("Entered error branch in /updatebuyer");
+           
+            StringBuilder errors = new StringBuilder();
+
+            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+
+
+			return "redirect:/editbuyer?buyerId=" + buyer.getId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
+		}
+
+
+        LOGGER.info("updated buyer =  " + buyer.toString());
+
+        dynamoDBService.updateBuyer(buyer);
+        
+
+        return "redirect:/buyers?auctionId=" + buyer.getAuctionId();
+        
+    }
+
     @PostMapping(value = "/deletelot")
     public String deleteLot(Lot lot) {
 
@@ -190,13 +217,24 @@ public class Endpoints {
     }
 
     @PostMapping(value = "/deleteseller")
-    public String deleterSeller(Seller seller) {
+    public String deleteSeller(Seller seller) {
 
         LOGGER.info("called delete seller for seller " + seller);
 
         dynamoDBService.deleteSeller(seller);
         
         return "redirect:/sellers?auctionId=" + seller.getAuctionId();
+        
+    }
+
+    @PostMapping(value = "/deletebuyer")
+    public String deleteBuyer(Buyer buyer) {
+
+        LOGGER.info("called delete buyer for buyer " + buyer);
+
+        dynamoDBService.deleteBuyer(buyer);
+        
+        return "redirect:/buyers?auctionId=" + buyer.getAuctionId();
         
     }
 

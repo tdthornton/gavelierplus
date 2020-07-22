@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.logging.Logger;
+
 import com.gavelier.gavelierplus.domain.Seller;
 
 import org.apache.http.ParseException;
@@ -45,8 +45,6 @@ public class CreateSellerTest extends SellerControllerTest {
 
         @Autowired
         ApplicationContext context;
-
-        private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
 
         @MockBean
         DynamoDBService mockService;
@@ -111,8 +109,7 @@ public class CreateSellerTest extends SellerControllerTest {
 
                 Seller seller = new Seller("auction_19292", 1, "Mr. A. Seller", "01826638291", "742 Evergreen Terrace");
 
-                MvcResult result = mockMvc
-                                .perform(post("/createseller").content(utilGetFormParamsForSeller(seller)).with(csrf())
+                mockMvc.perform(post("/createseller").content(utilGetFormParamsForSeller(seller)).with(csrf())
                                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                                 .andExpect(status().isFound()).andReturn();
 
@@ -167,7 +164,7 @@ public class CreateSellerTest extends SellerControllerTest {
                                 .andExpect(status().isFound()).andReturn();
 
 
-                String updateRedirectUrl = result.getResponse().getRedirectedUrl();
+                String updateRedirectUrl = updateResult.getResponse().getRedirectedUrl();
 
                 verify(mockService, times(1)).createSeller(seller); // DynamoDB was called once to add our updated seller
 

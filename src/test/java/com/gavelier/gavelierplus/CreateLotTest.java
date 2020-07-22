@@ -12,7 +12,6 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 import com.gavelier.gavelierplus.domain.Lot;
 
@@ -48,8 +47,6 @@ public class CreateLotTest extends BaseControllerTest {
 
         @Autowired
         ApplicationContext context;
-
-        private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
 
         @MockBean
         DynamoDBService mockService;
@@ -214,10 +211,10 @@ public class CreateLotTest extends BaseControllerTest {
 
                 String updateRedirectUrl = updateResult.getResponse().getRedirectedUrl();
 
-                verify(mockService, times(1)).createLot(lot); //DynamoDB was called once to add our lot (lot object checked has the updated string desc)
+                verify(mockService, times(1)).updateLot(lot); //DynamoDB was called once to add our lot (lot object checked has the updated string desc)
 
-                Assert.assertTrue(redirectUrl.contains("/lots?auctionId=" + lot.getAuctionId())); //we are redirected to the right place
-                Assert.assertFalse(redirectUrl.contains("&error=")); //we are redirected without errors
+                Assert.assertTrue(updateRedirectUrl.contains("/lots?auctionId=" + lot.getAuctionId())); //we are redirected to the right place
+                Assert.assertFalse(updateRedirectUrl.contains("&error=")); //we are redirected without errors
 
         }
 }

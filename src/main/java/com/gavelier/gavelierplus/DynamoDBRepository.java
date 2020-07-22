@@ -31,7 +31,7 @@ public class DynamoDBRepository {
         return auction;
     }
 
-    public void createLot(Lot lot) {
+    public void saveLot(Lot lot) {
         mapper.save(lot);
     }
 
