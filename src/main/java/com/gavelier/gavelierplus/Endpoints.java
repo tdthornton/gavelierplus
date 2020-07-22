@@ -4,13 +4,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.validation.Valid;
 
 import com.gavelier.gavelierplus.domain.Auction;
+import com.gavelier.gavelierplus.domain.Buyer;
 import com.gavelier.gavelierplus.domain.Lot;
+import com.gavelier.gavelierplus.domain.Seller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,7 +19,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class Endpoints {
@@ -26,7 +26,7 @@ public class Endpoints {
     @Autowired
     DynamoDBService dynamoDBService;
 
-    private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(Endpoints.class.getName());
 
     @PostMapping("/createauction")
     public String greeting(Auction auction, BindingResult bindingResult) {
@@ -70,6 +70,60 @@ public class Endpoints {
         
     }
 
+    @PostMapping(value = "/createseller", produces = "application/html")
+    public String createseller(@Valid Seller seller, BindingResult bindingResult, Model model, Principal principal)
+            throws UnsupportedEncodingException {
+
+        LOGGER.info("called create seller");
+
+        if (bindingResult.hasErrors()) {
+            LOGGER.info("Entered error branch in /createseller");
+           
+            StringBuilder errors = new StringBuilder();
+
+            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+
+
+			return "redirect:/sellers?auctionId=" + seller.getAuctionId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
+		}
+
+
+        LOGGER.info("seller =  " + seller.toString());
+
+        dynamoDBService.createSeller(seller);
+        
+
+        return "redirect:/sellers?auctionId=" + seller.getAuctionId();
+        
+    }
+
+    @PostMapping(value = "/createbuyer", produces = "application/html")
+    public String createBuyer(@Valid Buyer buyer, BindingResult bindingResult, Model model, Principal principal)
+            throws UnsupportedEncodingException {
+
+        LOGGER.info("called create buyer");
+
+        if (bindingResult.hasErrors()) {
+            LOGGER.info("Entered error branch in /createseller");
+           
+            StringBuilder errors = new StringBuilder();
+
+            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+
+
+			return "redirect:/buyers?auctionId=" + buyer.getAuctionId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
+		}
+
+
+        LOGGER.info("buyer =  " + buyer.toString());
+
+        dynamoDBService.createBuyer(buyer);
+        
+
+        return "redirect:/buyers?auctionId=" + buyer.getAuctionId();
+        
+    }
+
     @PostMapping(value = "/updatelot", produces = "application/html")
     public String updateLot(@Valid Lot lot, BindingResult bindingResult, Model model, Principal principal)
             throws UnsupportedEncodingException {
@@ -90,10 +144,64 @@ public class Endpoints {
 
         LOGGER.info("updated lot =  " + lot.toString());
 
-        dynamoDBService.createLot(lot);
+        dynamoDBService.updateLot(lot);
         
 
         return "redirect:/lots?auctionId=" + lot.getAuctionId();
+        
+    }
+
+    @PostMapping(value = "/updateseller", produces = "application/html")
+    public String updateSeller(@Valid Seller seller, BindingResult bindingResult, Model model, Principal principal)
+            throws UnsupportedEncodingException {
+
+        LOGGER.info("called update seller");
+
+        if (bindingResult.hasErrors()) {
+            LOGGER.info("Entered error branch in /updateseller");
+           
+            StringBuilder errors = new StringBuilder();
+
+            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+
+
+			return "redirect:/editseller?sellerId=" + seller.getId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
+		}
+
+
+        LOGGER.info("updated seller =  " + seller.toString());
+
+        dynamoDBService.updateSeller(seller);
+        
+
+        return "redirect:/sellers?auctionId=" + seller.getAuctionId();
+        
+    }
+
+    @PostMapping(value = "/updatebuyer", produces = "application/html")
+    public String updateBuyer(@Valid Buyer buyer, BindingResult bindingResult, Model model, Principal principal)
+            throws UnsupportedEncodingException {
+
+        LOGGER.info("called update buyer");
+
+        if (bindingResult.hasErrors()) {
+            LOGGER.info("Entered error branch in /updatebuyer");
+           
+            StringBuilder errors = new StringBuilder();
+
+            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+
+
+			return "redirect:/editbuyer?buyerId=" + buyer.getId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
+		}
+
+
+        LOGGER.info("updated buyer =  " + buyer.toString());
+
+        dynamoDBService.updateBuyer(buyer);
+        
+
+        return "redirect:/buyers?auctionId=" + buyer.getAuctionId();
         
     }
 
@@ -105,6 +213,28 @@ public class Endpoints {
         dynamoDBService.deleteLot(lot);
         
         return "redirect:/lots?auctionId=" + lot.getAuctionId();
+        
+    }
+
+    @PostMapping(value = "/deleteseller")
+    public String deleteSeller(Seller seller) {
+
+        LOGGER.info("called delete seller for seller " + seller);
+
+        dynamoDBService.deleteSeller(seller);
+        
+        return "redirect:/sellers?auctionId=" + seller.getAuctionId();
+        
+    }
+
+    @PostMapping(value = "/deletebuyer")
+    public String deleteBuyer(Buyer buyer) {
+
+        LOGGER.info("called delete buyer for buyer " + buyer);
+
+        dynamoDBService.deleteBuyer(buyer);
+        
+        return "redirect:/buyers?auctionId=" + buyer.getAuctionId();
         
     }
 

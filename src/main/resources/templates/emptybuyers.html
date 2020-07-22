@@ -9,13 +9,11 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin 2 - Blank</title>
+  <title>Buyers - Gavelier</title>
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link
-    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
@@ -63,7 +61,7 @@
       <hr class="sidebar-divider my-0">
 
       <!-- Nav Item - Lots -->
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" th:href="@{'/lots?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-list-ol"></i>
           <span>Lots</span></a>
@@ -77,7 +75,7 @@
       </li>
 
       <!-- Nav Item - Buyers -->
-      <li class="nav-item">
+      <li class="nav-item active">
         <a class="nav-link" th:href="@{'/buyers?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-users"></i>
           <span>Buyers</span></a>
@@ -132,7 +130,30 @@
             <i class="fa fa-bars"></i>
           </button>
 
-          
+          <!-- Topbar dropdown -->
+          <div class="dropdown w-100">
+            <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Switch Auction
+            </button>
+
+
+            <div class="dropdown-menu text-center" aria-labelledby="dropdownMenuButton">
+
+              <th:block th:each="auction : ${allAuctionsForUser}">
+
+
+
+                <a class="dropdown-item" th:href="@{/buyers(auctionId=${auction.id})}"
+                  th:text="${auction.inputCompanyName + ' - ' + #dates.format(auction.date, 'dd-MMM-yyyy')}"></a>
+
+              </th:block>
+            </div>
+
+
+
+
+          </div>
 
           <!-- Topbar Navbar -->
           <ul class="navbar-nav ml-auto">
@@ -204,72 +225,7 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
-          <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800" th:text="'Update lot ' + ${oldLot.lotNumber}"></h1>
-
-          <div class="row">
-            <div class="col">
-
-            </div>
-            <div class="col-11">
-
-
-             <div th:if="${error}">
-              <div th:text="${error}" role="alert" class="alert alert-danger"></div>
-          </div>
-
-
-
-              
-
-              
-
-              <form method="POST" action="#" th:action="@{/updatelot}" th:object="${updateLotForm}" >
-                <div class="form-row">
-                  <div class="form-group col-md-8">
-                    <label for="lotName">Lot name</label>
-                    <input type="text" class="form-control" name="desc" id="desc" 
-                      th:value="${oldLot.desc}">
-                  </div>
-                  <div class="form-group col-sm">
-                    <label for="sellerNumber">Seller number</label>
-                    <input type="text" class="form-control" id="sellerNumber" th:value="${oldLot.sellerNumber}" name="sellerNumber">
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-group col-sm">
-                    <label for="estimate">Estimate</label>
-                    <input type="text" class="form-control" id="estimate" th:value="${oldLot.estimate}" name="estimate">
-                    <br>
-
-                  </div>
-                  <div class="form-group col-sm">
-
-                  </div>
-                  <div class="form-group col-sm">
-                    <label for="reserve">Reserve</label>
-                    <input type="text" class="form-control" id="reserve" th:value="${oldLot.reserve}" name="reserve">
-                    <br>
-                  </div>
-                </div>
-
-                <input type="hidden" name="userId" th:value="${name}" />
-                <input type="hidden" name="lotNumber" th:value="${oldLot.lotNumber}" />
-                <input type="hidden" name="id" th:value="${oldLot.id}" />
-                <input type="hidden" name="auctionId" th:value="${oldLot.auctionId}" />
-
-                <button type="submit" class="btn btn-primary w-100">Submit updated lot</button>
-              </form>
-
-
-            </div>
-            <div class="col">
-
-            </div>
-          </div>
-
-
-          <br><br><br>
+          <h1 class="h3 mb-4 text-gray-800">Select an auction from the menu to see and add buyers.</h1>
 
 
         </div>
@@ -300,8 +256,7 @@
   </a>
 
   <!-- Logout Modal-->
-  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
+  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">

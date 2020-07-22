@@ -9,8 +9,11 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+
 import com.gavelier.gavelierplus.domain.Auction;
+import com.gavelier.gavelierplus.domain.Buyer;
 import com.gavelier.gavelierplus.domain.Lot;
+import com.gavelier.gavelierplus.domain.Seller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -18,7 +21,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class DynamoDBRepository {
 
-    private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(DynamoDBRepository.class.getName());
 
     @Autowired
     private DynamoDBMapper mapper;
@@ -28,7 +31,7 @@ public class DynamoDBRepository {
         return auction;
     }
 
-    public void createLot(Lot lot) {
+    public void saveLot(Lot lot) {
         mapper.save(lot);
     }
 
@@ -64,6 +67,54 @@ public class DynamoDBRepository {
     
     }
 
+    public List<Seller> getAllSellersFromAuction(String auctionId) {
+        List<Seller> sellers = null;
+
+        try{
+            Seller partitionKey = new Seller();
+            partitionKey.setAuctionId(auctionId);
+            DynamoDBQueryExpression<Seller> queryExpression = new DynamoDBQueryExpression<>();
+            queryExpression.setHashKeyValues(partitionKey);
+            queryExpression.setIndexName("auctionId");
+            queryExpression.setConsistentRead(false);
+    
+            sellers = mapper.query(Seller.class, queryExpression);
+        } catch (Exception e){
+            LOGGER.info("Exception querying datasource for gsiField " +  auctionId);
+            throw e;
+        }
+
+        LOGGER.info("LIST OF SELLERS FOR AUCTION " + auctionId + ": ");
+        LOGGER.info(sellers.toString());
+    
+        return sellers;
+    
+    }
+
+    public List<Buyer> getAllBuyersFromAuction(String auctionId) {
+        List<Buyer> buyers = null;
+
+        try{
+            Buyer partitionKey = new Buyer();
+            partitionKey.setAuctionId(auctionId);
+            DynamoDBQueryExpression<Buyer> queryExpression = new DynamoDBQueryExpression<>();
+            queryExpression.setHashKeyValues(partitionKey);
+            queryExpression.setIndexName("auctionId-index");
+            queryExpression.setConsistentRead(false);
+    
+            buyers = mapper.query(Buyer.class, queryExpression);
+        } catch (Exception e){
+            LOGGER.info("Exception querying datasource for gsiField " +  auctionId);
+            throw e;
+        }
+
+        LOGGER.info("LIST OF BUYERS FOR AUCTION " + auctionId + ": ");
+        LOGGER.info(buyers.toString());
+    
+        return buyers;
+    
+    }
+
 
 
     public List<Auction> allAuctionsForUserId(String userId) {
@@ -84,6 +135,32 @@ public class DynamoDBRepository {
 
 	public void deleteLot(Lot lot) {
         mapper.delete(lot);
+	}
+
+	public void save(Seller seller) {
+        mapper.save(seller);
+	}
+
+	public Seller getOneSeller(String sellerId) {
+		return mapper.load(Seller.class, sellerId);
+	}
+
+	public void deleteSeller(Seller seller) {
+        mapper.delete(seller);
+    }
+    
+    
+
+    public void save(Buyer buyer) {
+        mapper.save(buyer);
+	}
+
+	public Buyer getOneBuyer(String buyerId) {
+		return mapper.load(Buyer.class, buyerId);
+	}
+
+	public void deleteBuyer(Buyer buyer) {
+        mapper.delete(buyer);
 	}
 
 }

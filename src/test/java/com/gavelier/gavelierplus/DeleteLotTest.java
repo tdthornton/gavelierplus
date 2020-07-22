@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 import com.gavelier.gavelierplus.domain.Lot;
 
@@ -46,8 +45,6 @@ public class DeleteLotTest extends BaseDeleteLotControllerTest {
 
         @Autowired
         ApplicationContext context;
-
-        private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
 
         @MockBean
         DynamoDBService mockService;

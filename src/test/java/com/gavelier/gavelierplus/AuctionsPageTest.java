@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Logger;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
@@ -35,8 +34,6 @@ public class AuctionsPageTest extends AuctionsTestController {
 
         @Autowired
         ApplicationContext context;
-
-        private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
 
         @MockBean
         DynamoDBService mockService;

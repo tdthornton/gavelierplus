@@ -13,9 +13,7 @@
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link
-    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
@@ -63,14 +61,14 @@
       <hr class="sidebar-divider my-0">
 
       <!-- Nav Item - Lots -->
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" th:href="@{'/lots?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-list-ol"></i>
           <span>Lots</span></a>
       </li>
 
       <!-- Nav Item - Sellers -->
-      <li class="nav-item">
+      <li class="nav-item active">
         <a class="nav-link" th:href="@{'/sellers?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-users"></i>
           <span>Sellers</span></a>
@@ -205,7 +203,7 @@
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800" th:text="'Update lot ' + ${oldLot.lotNumber}"></h1>
+          <h1 class="h3 mb-4 text-gray-800" th:text="'Are you sure you want to delete seller ' + ${oldSeller.sellerNumber} + '?'"></h1>
 
           <div class="row">
             <div class="col">
@@ -224,41 +222,33 @@
 
               
 
-              <form method="POST" action="#" th:action="@{/updatelot}" th:object="${updateLotForm}" >
+              <form method="POST" action="#" th:action="@{/deleteseller}" th:object="${deleteSellerForm}" >
                 <div class="form-row">
                   <div class="form-group col-md-8">
-                    <label for="lotName">Lot name</label>
-                    <input type="text" class="form-control" name="desc" id="desc" 
-                      th:value="${oldLot.desc}">
+                    <label for="lotName">Seller name</label>
+                    <input type="text" class="form-control" name="sellerName" id="sellerName" placeholder="Seller name"
+                    th:value="${oldSeller.sellerName}" readonly>
                   </div>
                   <div class="form-group col-sm">
-                    <label for="sellerNumber">Seller number</label>
-                    <input type="text" class="form-control" id="sellerNumber" th:value="${oldLot.sellerNumber}" name="sellerNumber">
+                    <label for="sellerNumber">Seller contact number</label>
+                    <input type="text" class="form-control" id="sellerContactNumber" th:value="${oldSeller.sellerContactNumber}" name="sellerContactNumber" readonly>
                   </div>
                 </div>
                 <div class="form-row">
                   <div class="form-group col-sm">
-                    <label for="estimate">Estimate</label>
-                    <input type="text" class="form-control" id="estimate" th:value="${oldLot.estimate}" name="estimate">
+                    <label for="estimate">Seller address</label>
+                    <input type="text" class="form-control" id="sellerAddress" th:value="${oldSeller.sellerAddress}" name="sellerAddress" readonly>
                     <br>
 
-                  </div>
-                  <div class="form-group col-sm">
-
-                  </div>
-                  <div class="form-group col-sm">
-                    <label for="reserve">Reserve</label>
-                    <input type="text" class="form-control" id="reserve" th:value="${oldLot.reserve}" name="reserve">
-                    <br>
                   </div>
                 </div>
 
                 <input type="hidden" name="userId" th:value="${name}" />
-                <input type="hidden" name="lotNumber" th:value="${oldLot.lotNumber}" />
-                <input type="hidden" name="id" th:value="${oldLot.id}" />
-                <input type="hidden" name="auctionId" th:value="${oldLot.auctionId}" />
+                <input type="hidden" name="sellerNumber" th:value="${oldSeller.sellerNumber}" />
+                <input type="hidden" name="id" th:value="${oldSeller.id}" />
+                <input type="hidden" name="auctionId" th:value="${oldSeller.auctionId}" />
 
-                <button type="submit" class="btn btn-primary w-100">Submit updated lot</button>
+                <button type="submit" class="btn btn-primary w-100">Delete seller</button>
               </form>
 
 
@@ -270,6 +260,7 @@
 
 
           <br><br><br>
+
 
 
         </div>
@@ -300,8 +291,7 @@
   </a>
 
   <!-- Logout Modal-->
-  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
+  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
