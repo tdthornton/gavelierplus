@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import com.gavelier.gavelierplus.domain.Auction;
+import com.gavelier.gavelierplus.domain.Buyer;
 import com.gavelier.gavelierplus.domain.Lot;
 import com.gavelier.gavelierplus.domain.Seller;
 
@@ -290,16 +291,61 @@ public class Pages {
     }
 
     @GetMapping("/buyers")
-    public String bueyrs(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
+    public String buyers(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
 
-        LOGGER.info("Access to buyers page");
+        LOGGER.info("Access to buyers page by " + principal.getName());
 
         String currentAuctionId = queryParameters.get("auctionId");
-        model.addAttribute("currentAuctionId", currentAuctionId);
 
-        model.addAttribute("name", principal.getName());
+        LOGGER.info("Called buyers page, auction ID = " + currentAuctionId);
 
-        return "buyers";
+        model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+
+        model.addAttribute("error", queryParameters.get("error"));
+
+        if (currentAuctionId != null && currentAuctionId != "null") {
+            Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+            if (currentAuction != null) { // if the auction exists, we can accept new buyers for it, and show the
+                                          // existing ones.
+
+                // get all buyers for this auction and sort the scan
+                List<Buyer> allBuyers = dynamoDBService.getAllBuyersForAuction(currentAuctionId);
+
+                model.addAttribute("name", principal.getName());
+
+                if (allBuyers.size() == 0) {
+                    model.addAttribute("nextBuyerNumber", 1);
+                } else {
+
+                    Buyer highestSellerNumber = allBuyers.stream()
+                            .max(Comparator.comparing(buyer -> buyer.getBuyerNumber())).get();
+                    if (highestSellerNumber.getBuyerNumber() == 1) {
+                        model.addAttribute("nextBuyerNumber", 2);
+                    } else {
+                        model.addAttribute("nextBuyerNumber", highestSellerNumber.getBuyerNumber() + 1);
+                    }
+
+                }
+                model.addAttribute("currentAuctionId", currentAuctionId);
+                model.addAttribute("currentAuctionName",
+                        currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
+                model.addAttribute("buyersForCurrentAuction", allBuyers);
+
+                return "buyers";
+
+            } else {
+
+                // there is no valid auction provided
+                // so we show a page with no form, only the option to select an auction
+                return "emptybuyers";
+
+            }
+        } else {
+            // there is no valid auction provided
+            // so we show a page with no form, only the option to select an auction
+            return "emptybuyers";
+        }
 
     }
 
