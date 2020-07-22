@@ -166,6 +166,24 @@ public class Pages {
 
     }
 
+    @GetMapping("/editseller")
+    public String editSeller(@RequestParam String sellerId, Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to update seller page. Lot id " + sellerId);
+
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("error", queryParameters.get("error"));
+
+        Seller oldSellerState = dynamoDBService.getOneSeller(sellerId);
+
+        model.addAttribute("oldSeller", oldSellerState);
+
+        return "editseller";
+
+    }
+
+    
+
     @GetMapping("/deletelotconfirmation")
     public String deleteLot(@RequestParam String lotId, Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
 

@@ -71,7 +71,8 @@ public class DynamoDBService {
 	}
 
 	public void createSeller(Seller seller) {
-
+        //Creating a new seller: in case of double form submission, we have to filter the existing sellers
+        //to check that we are not saving a seller with a duplicate number
         List<Seller> allExistingSellers = getAllSellersForAuction(seller.getAuctionId());
 
         if(!allExistingSellers.stream().filter(existingSeller -> seller.getSellerNumber()==existingSeller.getSellerNumber()).findFirst().isPresent()) {
@@ -80,10 +81,19 @@ public class DynamoDBService {
             LOGGER.info("Seller number repeated " + seller);
         }
 
-        
 
+    }
 
+    public void updateSeller(Seller seller) {
+        //In the case of updating the seller, it already exists with this number, so we just pass the object on
+        //to the same method
+        dynamoDBRepository.save(seller);
+    }
 
+	public Seller getOneSeller(String sellerId) {
+		return dynamoDBRepository.getOneSeller(sellerId);
 	}
+    
+
 
 }

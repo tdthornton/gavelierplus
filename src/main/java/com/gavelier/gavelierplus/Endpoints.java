@@ -123,6 +123,33 @@ public class Endpoints {
         
     }
 
+    @PostMapping(value = "/updateseller", produces = "application/html")
+    public String updateSeller(@Valid Seller seller, BindingResult bindingResult, Model model, Principal principal)
+            throws UnsupportedEncodingException {
+
+        LOGGER.info("called update seller");
+
+        if (bindingResult.hasErrors()) {
+            LOGGER.info("Entered error branch in /updateseller");
+           
+            StringBuilder errors = new StringBuilder();
+
+            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+
+
+			return "redirect:/editseller?sellerId=" + seller.getId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
+		}
+
+
+        LOGGER.info("updated seller =  " + seller.toString());
+
+        dynamoDBService.updateSeller(seller);
+        
+
+        return "redirect:/sellers?auctionId=" + seller.getAuctionId();
+        
+    }
+
     @PostMapping(value = "/deletelot")
     public String deleteLot(Lot lot) {
 

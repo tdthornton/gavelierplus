@@ -116,4 +116,8 @@ public class DynamoDBRepository {
         mapper.save(seller);
 	}
 
+	public Seller getOneSeller(String sellerId) {
+		return mapper.load(Seller.class, sellerId);
+	}
+
 }

@@ -30,7 +30,10 @@ public class Seller implements Serializable {
     @Min(1)
     private int sellerNumber;
 
+    @NotNull
+    @NotBlank
     private String sellerName;
+    
     private String sellerContactNumber;
     private String sellerAddress;
 
