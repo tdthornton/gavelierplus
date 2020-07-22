@@ -45,7 +45,7 @@ public class DynamoDBService {
     
     public List<Seller> getAllSellersForAuction(String currentAuctionId) {
 		return dynamoDBRepository.getAllSellersFromAuction(currentAuctionId).stream()
-        .sorted((seller1, seller2) -> Integer.compare(seller1.getSellerNumber(), seller2.getSellerNumber()))
+        .sorted((seller1, seller2) -> Integer.compare(seller2.getSellerNumber(), seller1.getSellerNumber()))
         .collect(toList());
     }
     
@@ -64,8 +64,25 @@ public class DynamoDBService {
     }
 
 	public void createLot(Lot lot) {
-        dynamoDBRepository.createLot(lot);
-	}
+        //Creating a new lot: in case of double form submission, we have to filter the existing lots
+        //to check that we are not saving a lot with a duplicate number
+        List<Lot> allExistingLots = getAllLotsForAuction(lot.getAuctionId());
+        
+
+        if(!allExistingLots.stream().filter(existingLot -> lot.getLotNumber()==existingLot.getLotNumber()).findFirst().isPresent()) {
+            dynamoDBRepository.saveLot(lot);
+        } else {
+            LOGGER.info("lot number repeated " + lot);
+        }
+
+
+    }
+
+    public void updateLot(Lot lot) {
+        //In the case of updating the lot, it already exists with this number, so we just pass the object on
+        //to the same method
+        dynamoDBRepository.saveLot(lot);
+    }
 
 	public void setRepository(DynamoDBRepository dynamoDBRepository2) {
         this.dynamoDBRepository=dynamoDBRepository2;
@@ -109,9 +126,9 @@ public class DynamoDBService {
     public void createBuyer(Buyer buyer) {
         //Creating a new buyer: in case of double form submission, we have to filter the existing buyers
         //to check that we are not saving a buyer with a duplicate number
-        List<Buyer> allExistingSellers = getAllBuyersForAuction(buyer.getAuctionId());
+        List<Buyer> allExistingBuyers = getAllBuyersForAuction(buyer.getAuctionId());
 
-        if(!allExistingSellers.stream().filter(existingBuyer -> buyer.getBuyerNumber()==existingBuyer.getBuyerNumber()).findFirst().isPresent()) {
+        if(!allExistingBuyers.stream().filter(existingBuyer -> buyer.getBuyerNumber()==existingBuyer.getBuyerNumber()).findFirst().isPresent()) {
             dynamoDBRepository.save(buyer);
         } else {
             LOGGER.info("Buyer number repeated " + buyer);

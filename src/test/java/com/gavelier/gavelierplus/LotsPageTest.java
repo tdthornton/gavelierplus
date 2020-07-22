@@ -10,7 +10,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.logging.Logger;
 
 import com.gavelier.gavelierplus.domain.Auction;
 import com.gavelier.gavelierplus.domain.Lot;
@@ -42,8 +41,6 @@ public class LotsPageTest extends LotsPageTestController {
 
         @Autowired
         ApplicationContext context;
-
-        private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
 
         @Autowired
         DynamoDBService service;

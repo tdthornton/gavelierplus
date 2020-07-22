@@ -6,16 +6,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.logging.Logger;
 import com.gavelier.gavelierplus.domain.Seller;
 
-import org.apache.http.ParseException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -45,9 +37,6 @@ public class DeleteSellerTest extends SellerDeleteControllerTest {
 
         @Autowired
         ApplicationContext context;
-
-        private final static Logger LOGGER = Logger.getLogger(Pages.class.getName());
-
         @MockBean
         DynamoDBService mockService;
 
@@ -83,14 +72,14 @@ public class DeleteSellerTest extends SellerDeleteControllerTest {
                                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                                 .andExpect(status().isFound()).andReturn();
 
-                String deleteRedirectUrl = result.getResponse().getRedirectedUrl();
+                String deleteRedirectUrl = deleteResult.getResponse().getRedirectedUrl();
 
                 verify(mockService, times(1)).deleteSeller(seller); // Delete seller called once
 
-                Assert.assertTrue(redirectUrl.contains("/sellers?auctionId=" + seller.getAuctionId())); // we are
+                Assert.assertTrue(deleteRedirectUrl.contains("/sellers?auctionId=" + seller.getAuctionId())); // we are
                                                                                                         // redirected to
                                                                                                         // the right place
-                Assert.assertFalse(redirectUrl.contains("&error=")); // we are redirected without errors
+                Assert.assertFalse(deleteRedirectUrl.contains("&error=")); // we are redirected without errors
 
         }
 

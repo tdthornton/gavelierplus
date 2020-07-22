@@ -144,7 +144,7 @@ public class Endpoints {
 
         LOGGER.info("updated lot =  " + lot.toString());
 
-        dynamoDBService.createLot(lot);
+        dynamoDBService.updateLot(lot);
         
 
         return "redirect:/lots?auctionId=" + lot.getAuctionId();
