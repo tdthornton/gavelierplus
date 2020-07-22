@@ -298,6 +298,8 @@
                       <th>Seller name</th>
                       <th>Seller Contact number</th>
                       <th>Seller address</th>
+                      <th>Edit</th>
+                      <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -308,8 +310,8 @@
                         <td th:text="${seller.sellerName}"></td>
                         <td th:text="${seller.sellerContactNumber}"></td>
                         <td th:text="${seller.sellerAddress}"></td>
-                        <!-- <td><a class="nav-link" th:href="@{'/editlot?lotId=' + ${lot.id}}"><i class="fa fa-edit"></i></a></td>
-                        <td><a class="nav-link" th:href="@{'/deletelotconfirmation?lotId=' + ${lot.id}}"><i class="fas fa-trash"></i></a></td> -->
+                        <td><a class="nav-link" th:href="@{'/editseller?sellerId=' + ${seller.id}}"><i class="fa fa-edit"></i></a></td>
+                        <td><a class="nav-link" th:href="@{'/deletesellerconfirmation?sellerId=' + ${seller.id}}"><i class="fas fa-trash"></i></a></td>
                       </tr>
 
                     </th:block>

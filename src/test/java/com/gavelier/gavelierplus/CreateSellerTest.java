@@ -120,7 +120,7 @@ public class CreateSellerTest extends SellerControllerTest {
 
         }
 
-        private String utilGetFormParamsForSeller(Seller seller)
+        public static String utilGetFormParamsForSeller(Seller seller)
                         throws ParseException, UnsupportedEncodingException, IOException {
                 return EntityUtils.toString(new UrlEncodedFormEntity(Arrays.asList(
                                 new BasicNameValuePair("id", seller.getId()),
@@ -130,6 +130,56 @@ public class CreateSellerTest extends SellerControllerTest {
                                 new BasicNameValuePair("sellerContactNumber", seller.getSellerContactNumber()),
                                 new BasicNameValuePair("sellerAddress", seller.getSellerAddress())
                 )));
+        }
+
+        @Test
+        @WithMockUser
+        public void testUpdateLot() throws Exception {
+
+                // perform create seller test
+                // then post an updated seller with the same number to /updateseller
+                // see that the db service was called to save the seller (repository takes care of updating rather than inserting)
+
+                Seller seller = new Seller("auction_19292", 1, "Mr. A. Seller", "01826638291", "742 Evergreen Terrace");
+
+                MvcResult result = mockMvc
+                                .perform(post("/createseller").content(utilGetFormParamsForSeller(seller)).with(csrf())
+                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                                .andExpect(status().isFound()).andReturn();
+
+                String redirectUrl = result.getResponse().getRedirectedUrl();
+
+                verify(mockService, times(1)).createSeller(seller); // DynamoDB was called once to add our seller
+
+                Assert.assertTrue(redirectUrl.contains("/sellers?auctionId=" + seller.getAuctionId())); // we are
+                                                                                                     // redirected to
+                                                                                                     // the right place
+                Assert.assertFalse(redirectUrl.contains("&error=")); // we are redirected without errors
+
+
+
+                //update section
+                seller.setSellerName("Mrs. B. Seller");
+
+                MvcResult updateResult = mockMvc
+                                .perform(post("/updateseller").content(utilGetFormParamsForSeller(seller)).with(csrf())
+                                                .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                                .andExpect(status().isFound()).andReturn();
+
+
+                String updateRedirectUrl = result.getResponse().getRedirectedUrl();
+
+                verify(mockService, times(1)).createSeller(seller); // DynamoDB was called once to add our updated seller
+
+                Assert.assertTrue(updateRedirectUrl.contains("/sellers?auctionId=" + seller.getAuctionId())); // we are
+                                                                                                        // redirected to
+                                                                                                        // the right place
+                Assert.assertFalse(updateRedirectUrl.contains("&error=")); // we are redirected without errors
+
+                
+
+
+
         }
 
 }

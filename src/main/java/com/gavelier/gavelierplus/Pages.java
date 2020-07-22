@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 
 import java.security.Principal;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,6 @@ public class Pages {
 
     @Autowired
     DynamoDBService dynamoDBService;
-
 
     @GetMapping("/")
     public String greeting(@RequestParam(name = "name", required = false, defaultValue = "World") String name,
@@ -103,19 +103,15 @@ public class Pages {
 
         model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
 
-
-
         model.addAttribute("error", queryParameters.get("error"));
-
-        
 
         if (currentAuctionId != null && currentAuctionId != "null") {
             Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
 
-            if (currentAuction != null) { //if the auction exists, we can accept new lots for it, and show the existing ones.
+            if (currentAuction != null) { // if the auction exists, we can accept new lots for it, and show the existing
+                                          // ones.
 
-
-                //get all lots for this auction and sort the scan
+                // get all lots for this auction and sort the scan
                 List<Lot> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
                         .sorted((lot1, lot2) -> Integer.compare(lot2.getLotNumber(), lot1.getLotNumber()))
                         .collect(toList());
@@ -124,34 +120,42 @@ public class Pages {
 
                 if (allLotsForAuction.size() == 0) {
                     model.addAttribute("nextLotNumber", 1);
-                } else if (allLotsForAuction.size() == 1) {
-                    model.addAttribute("nextLotNumber", 2);
                 } else {
-                    model.addAttribute("nextLotNumber", allLotsForAuction.size() + 1);
+
+                    Lot highestLotNumber = allLotsForAuction.stream()
+                            .max(Comparator.comparing(lot -> lot.getLotNumber())).get();
+                    if (highestLotNumber.getLotNumber() == 1) {
+                        model.addAttribute("nextLotNumber", 2);
+                    } else {
+                        model.addAttribute("nextLotNumber", highestLotNumber.getLotNumber() + 1);
+                    }
+
                 }
                 model.addAttribute("currentAuctionId", currentAuctionId);
-                model.addAttribute("currentAuctionName", currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
+                model.addAttribute("currentAuctionName",
+                        currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
                 model.addAttribute("lotsForCurrentAuction", allLotsForAuction);
 
                 return "lots";
 
             } else {
 
-                //there is no valid auction provided
-                //so we show a page with no form, only the option to select an auction
+                // there is no valid auction provided
+                // so we show a page with no form, only the option to select an auction
                 return "emptylots";
 
             }
         } else {
-            //there is no valid auction provided
-                //so we show a page with no form, only the option to select an auction
+            // there is no valid auction provided
+            // so we show a page with no form, only the option to select an auction
             return "emptylots";
         }
 
     }
 
     @GetMapping("/editlot")
-    public String editLot(@RequestParam String lotId, Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
+    public String editLot(@RequestParam String lotId, Principal principal, Model model,
+            @RequestParam Map<String, String> queryParameters) {
 
         LOGGER.info("Access to update lot page. Lot id " + lotId);
 
@@ -166,8 +170,26 @@ public class Pages {
 
     }
 
+    @GetMapping("/editseller")
+    public String editSeller(@RequestParam String sellerId, Principal principal, Model model,
+            @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to update seller page. Lot id " + sellerId);
+
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("error", queryParameters.get("error"));
+
+        Seller oldSellerState = dynamoDBService.getOneSeller(sellerId);
+
+        model.addAttribute("oldSeller", oldSellerState);
+
+        return "editseller";
+
+    }
+
     @GetMapping("/deletelotconfirmation")
-    public String deleteLot(@RequestParam String lotId, Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
+    public String deleteLot(@RequestParam String lotId, Principal principal, Model model,
+            @RequestParam Map<String, String> queryParameters) {
 
         LOGGER.info("Access to delete lot page. Lot id " + lotId);
 
@@ -182,6 +204,32 @@ public class Pages {
 
     }
 
+    @GetMapping("/deletesellerconfirmation")
+    public String deleteSellerConfirmation(@RequestParam String sellerId, Principal principal, Model model,
+            @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to delete seller page. Seller id " + sellerId);
+
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("error", queryParameters.get("error"));
+
+        Seller oldSellerState = dynamoDBService.getOneSeller(sellerId);
+
+        if (oldSellerState!=null && oldSellerState.getId()!=null) {
+
+            model.addAttribute("oldSeller", oldSellerState);
+
+            return "deletesellerconfirmation";
+
+        } else {
+
+            return "redirect:/sellers";
+        }
+
+        
+
+    }
+
     @GetMapping("/sellers")
     public String sellers(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
 
@@ -193,46 +241,49 @@ public class Pages {
 
         model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
 
-
-
         model.addAttribute("error", queryParameters.get("error"));
-
-        
 
         if (currentAuctionId != null && currentAuctionId != "null") {
             Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
 
-            if (currentAuction != null) { //if the auction exists, we can accept new sellers for it, and show the existing ones.
+            if (currentAuction != null) { // if the auction exists, we can accept new sellers for it, and show the
+                                          // existing ones.
 
-
-                //get all sellers for this auction and sort the scan
+                // get all sellers for this auction and sort the scan
                 List<Seller> allSellers = dynamoDBService.getAllSellersForAuction(currentAuctionId);
 
                 model.addAttribute("name", principal.getName());
 
                 if (allSellers.size() == 0) {
                     model.addAttribute("nextSellerNumber", 1);
-                } else if (allSellers.size() == 1) {
-                    model.addAttribute("nextSellerNumber", 2);
                 } else {
-                    model.addAttribute("nextSellerNumber", allSellers.size() + 1);
+
+                    Seller highestSellerNumber = allSellers.stream()
+                            .max(Comparator.comparing(seller -> seller.getSellerNumber())).get();
+                    if (highestSellerNumber.getSellerNumber() == 1) {
+                        model.addAttribute("nextSellerNumber", 2);
+                    } else {
+                        model.addAttribute("nextSellerNumber", highestSellerNumber.getSellerNumber() + 1);
+                    }
+
                 }
                 model.addAttribute("currentAuctionId", currentAuctionId);
-                model.addAttribute("currentAuctionName", currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
+                model.addAttribute("currentAuctionName",
+                        currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
                 model.addAttribute("sellersForCurrentAuction", allSellers);
 
                 return "sellers";
 
             } else {
 
-                //there is no valid auction provided
-                //so we show a page with no form, only the option to select an auction
+                // there is no valid auction provided
+                // so we show a page with no form, only the option to select an auction
                 return "emptysellers";
 
             }
         } else {
-            //there is no valid auction provided
-            //so we show a page with no form, only the option to select an auction
+            // there is no valid auction provided
+            // so we show a page with no form, only the option to select an auction
             return "emptysellers";
         }
 
@@ -292,7 +343,5 @@ public class Pages {
         return "archive";
 
     }
-
-    
 
 }
