@@ -1,6 +1,7 @@
 package com.gavelier.gavelierplus;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.List;
@@ -235,6 +236,41 @@ public class Endpoints {
         dynamoDBService.deleteBuyer(buyer);
         
         return "redirect:/buyers?auctionId=" + buyer.getAuctionId();
+        
+    }
+
+
+
+    @PostMapping(value = "/recordsales", produces = "application/html")
+    public String recordSales(@Valid Lot lot, BindingResult bindingResult, Model model, Principal principal)
+            throws UnsupportedEncodingException {
+
+        LOGGER.info("called record sales");
+
+        if (bindingResult.hasErrors()) {
+            LOGGER.info("Entered error branch in /recordsales");
+           
+            StringBuilder errors = new StringBuilder();
+
+            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+
+
+			return "redirect:/auctioneering?auctionId=" + lot.getAuctionId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
+        }
+
+        if (lot.getSalePrice() == null) {
+            return "redirect:/auctioneering?auctionId=" + lot.getAuctionId() + "&error=" + URLEncoder.encode("Lot "+ lot.getLotNumber() +": no sale price provided.", "UTF-8");
+        }
+
+        if (lot.getSalePrice().equals(new BigDecimal("0.00"))  && lot.getBuyerNumber() > 0) {
+            return "redirect:/auctioneering?auctionId=" + lot.getAuctionId() + "&error=" + URLEncoder.encode("Lot "+ lot.getLotNumber() +": cannot submit buyer number if sale price is 0.00.", "UTF-8");
+        }
+
+
+        dynamoDBService.updateLot(lot);
+        
+
+        return "redirect:/auctioneering?auctionId=" + lot.getAuctionId();
         
     }
 

@@ -404,11 +404,45 @@ public class Pages {
         LOGGER.info("Access to auctioneering page");
 
         String currentAuctionId = queryParameters.get("auctionId");
-        model.addAttribute("currentAuctionId", currentAuctionId);
 
-        model.addAttribute("name", principal.getName());
+        LOGGER.info("Called auctioneering page, auction ID = " + currentAuctionId);
 
-        return "auctioneering";
+        model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+
+        model.addAttribute("error", queryParameters.get("error"));
+
+        if (currentAuctionId != null && currentAuctionId != "null") {
+            Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+            if (currentAuction != null) { // if the auction exists, we can sell the lots
+
+                // get all lots for this auction and sort the scan in ascending lot number order
+                List<Lot> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
+                        .sorted((lot1, lot2) -> Integer.compare(lot1.getLotNumber(), lot2.getLotNumber()))
+                        .collect(toList());
+
+                model.addAttribute("name", principal.getName());
+
+                
+                model.addAttribute("currentAuctionId", currentAuctionId);
+                model.addAttribute("currentAuctionName",
+                        currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
+                model.addAttribute("lotsForCurrentAuction", allLotsForAuction);
+
+                return "auctioneering";
+
+            } else {
+
+                // there is no valid auction provided
+                // so we show a page with no form, only the option to select an auction
+                return "emptyauctioneering";
+
+            }
+        } else {
+            // there is no valid auction provided
+            // so we show a page with no form, only the option to select an auction
+            return "emptyauctioneering";
+        }
 
     }
 

@@ -9,18 +9,15 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin 2 - Blank</title>
+  <title>Buyers - Gavelier</title>
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-  <link
-    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
   <!-- Custom styles for this template-->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
   <link href="css/mycss.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/autonumeric/4.1.0/autoNumeric.min.js"></script>
 
 </head>
 
@@ -78,14 +75,14 @@
       </li>
 
       <!-- Nav Item - Buyers -->
-      <li class="nav-item">
+      <li class="nav-item active">
         <a class="nav-link" th:href="@{'/buyers?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-users"></i>
           <span>Buyers</span></a>
       </li>
 
       <!-- Nav Item - Auctioneering -->
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" th:href="@{'/auctioneering?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-gavel"></i>
           <span>Auctioneering</span></a>
@@ -137,8 +134,10 @@
           <div class="dropdown w-100">
             <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton"
               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Auctions
+              Switch Auction
             </button>
+
+
             <div class="dropdown-menu text-center" aria-labelledby="dropdownMenuButton">
 
               <th:block th:each="auction : ${allAuctionsForUser}">
@@ -150,6 +149,10 @@
 
               </th:block>
             </div>
+
+
+
+
           </div>
 
           <!-- Topbar Navbar -->
@@ -222,68 +225,7 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
-          <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800" th:text="'Auctioneering for ' + ${currentAuctionName}"></h1>
-
-          <div th:if="${error}">
-            <div th:text="${error}" role="alert" class="alert alert-danger"></div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-7">
-              Description
-            </div>
-            <div class="col-sm">
-              Buyer number
-            </div>
-            <div class="col-sm">
-              Sale price
-            </div>
-            <div class="col-sm">
-              Submit
-            </div>
-          </div>
-
-          <th:block th:each="lot : ${lotsForCurrentAuction}">
-
-
-            <form method="POST" id="form" action="#" th:action="@{/recordsales}" th:object="${salesForm}">
-
-
-              <div class="form-row">
-                <div class="form-group col-md-7">
-                  <input type="text" class="form-control" name="desc" id="desc" placeholder="Lot description"
-                    th:value="${lot.desc}" readonly>
-                </div>
-                <div class="form-group col-sm">
-                  <input type="text" class="form-control" id="buyerNumber" th:value="${lot.buyerNumber}" name="buyerNumber">
-                </div>
-                <div class="form-group col-sm">
-                  <input type="text" class="form-control salePrice" id="salePrice" th:value="${lot.salePrice}" name="salePrice">
-                </div>
-                <input type="hidden" name="sellerNumber" th:value="${lot.sellerNumber}" />
-                <input type="hidden" name="reserve" th:value="${lot.reserve}" />
-                <input type="hidden" name="estimate" th:value="${lot.estimate}" />
-                <input type="hidden" name="lotNumber" th:value="${lot.lotNumber}" />
-                <input type="hidden" name="id" th:value="${lot.id}" />
-                <input type="hidden" name="userId" th:value="${name}" />
-                <input type="hidden" name="auctionId" th:value="${currentAuctionId}" />
-                <div class="form-group col-sm">
-                  <button type="submit" id="submit" class="btn btn-primary w-100">Submit sales</button>
-                </div>
-              </div>
-
-
-            </form>
-
-
-
-          </th:block>
-
-          <br><br>
-
-          
-
+          <h1 class="h3 mb-4 text-gray-800">Select an auction from the menu to proceed with the auction.</h1>
 
 
         </div>
@@ -314,8 +256,7 @@
   </a>
 
   <!-- Logout Modal-->
-  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
+  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -342,29 +283,6 @@
 
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin-2.min.js"></script>
-
-  <script> 
-  $(document).ready(function () {
-    // const saleConstant = new AutoNumeric('#salePrice', {
-    //     decimalCharacter: '.',
-    //     digitGroupSeparator: '',
-    //     minimumValue: 0.00,
-    //     modifyValueOnWheel: false
-    // });
-    
-
-
-    const autoNumericOptions = {
-      decimalCharacter: '.',
-        digitGroupSeparator: '',
-        minimumValue: 0.00,
-        modifyValueOnWheel: false
-      };
-    AutoNumeric.multiple(".salePrice",null, autoNumericOptions); 
-  });
-    </script>
-
-  
 
 </body>
 

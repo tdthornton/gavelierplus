@@ -43,6 +43,8 @@ public class Lot implements Serializable {
     private String estimate;
     private String reserve;
 
+    private int buyerNumber;
+
     private BigDecimal salePrice;
 
     private BigDecimal costToBuyer;
@@ -53,7 +55,7 @@ public class Lot implements Serializable {
     }
 
     public Lot(String id, String auctionId, int sellerNumber, int lotNumber, String desc, String estimate,
-            String reserve, BigDecimal salePrice, BigDecimal costToBuyer, BigDecimal paymentToSeller) {
+            String reserve, int buyerNumber, BigDecimal salePrice, BigDecimal costToBuyer, BigDecimal paymentToSeller) {
         this.id = id;
         this.auctionId = auctionId;
         this.sellerNumber = sellerNumber;
@@ -61,12 +63,13 @@ public class Lot implements Serializable {
         this.desc = desc;
         this.estimate = estimate;
         this.reserve = reserve;
+        this.buyerNumber = buyerNumber;
         this.salePrice = salePrice;
         this.costToBuyer = costToBuyer;
         this.paymentToSeller = paymentToSeller;
     }
 
-    public Lot(String auctionId, int sellerNumber, int lotNumber, String desc, String estimate, String reserve,
+    public Lot(String auctionId, int sellerNumber, int lotNumber, String desc, String estimate, String reserve, int buyerNumber,
             BigDecimal salePrice, BigDecimal costToBuyer, BigDecimal paymentToSeller) {
         this.auctionId = auctionId;
         this.sellerNumber = sellerNumber;
@@ -74,6 +77,7 @@ public class Lot implements Serializable {
         this.desc = desc;
         this.estimate = estimate;
         this.reserve = reserve;
+        this.buyerNumber = buyerNumber;
         this.salePrice = salePrice;
         this.costToBuyer = costToBuyer;
         this.paymentToSeller = paymentToSeller;
@@ -145,6 +149,15 @@ public class Lot implements Serializable {
     }
 
     @DynamoDBAttribute
+    public int getBuyerNumber() {
+        return this.buyerNumber;
+    }
+
+    public void setBuyerNumber(int buyerNumber) {
+        this.buyerNumber = buyerNumber;
+    }
+
+    @DynamoDBAttribute
     public BigDecimal getSalePrice() {
         return this.salePrice;
     }
@@ -181,14 +194,15 @@ public class Lot implements Serializable {
             return false;
         }
         Lot lot = (Lot) o;
-        return Objects.equals(id, lot.id) && Objects.equals(auctionId, lot.auctionId) && sellerNumber == lot.sellerNumber && lotNumber == lot.lotNumber && Objects.equals(desc, lot.desc) && Objects.equals(estimate, lot.estimate) && Objects.equals(reserve, lot.reserve) && Objects.equals(salePrice, lot.salePrice) && Objects.equals(costToBuyer, lot.costToBuyer) && Objects.equals(paymentToSeller, lot.paymentToSeller);
+        return Objects.equals(id, lot.id) && Objects.equals(auctionId, lot.auctionId) && sellerNumber == lot.sellerNumber && lotNumber == lot.lotNumber && buyerNumber == lot.buyerNumber& Objects.equals(desc, lot.desc) && Objects.equals(estimate, lot.estimate) && Objects.equals(reserve, lot.reserve) && Objects.equals(salePrice, lot.salePrice) && Objects.equals(costToBuyer, lot.costToBuyer) && Objects.equals(paymentToSeller, lot.paymentToSeller);
     }
 
     @Override
     public String toString() {
         return "{" + " id='" + getId() + "'" + ", auctionId='" + getAuctionId() + "'" + ", sellerNumber='"
                 + getSellerNumber() + "'" + ", lotNumber='" + getLotNumber() + "'" + ", desc='" + getDesc() + "'"
-                + ", estimate='" + getEstimate() + "'" + ", reserve='" + getReserve() + "'" + ", salePrice='"
+                + ", estimate='" + getEstimate() + "'" + ", reserve='" + getReserve() + "'" + ", buyerNumber='"
+                + getBuyerNumber() + ", salePrice='"
                 + getSalePrice() + "'" + ", costToBuyer='" + getCostToBuyer() + "'" + ", paymentToSeller='"
                 + getPaymentToSeller() + "'" + "}";
     }
