@@ -59,7 +59,7 @@ public class DeleteLotTest extends BaseDeleteLotControllerTest {
                 // and the db service is called to delete the lot by the endpoint
 
 
-                Lot lot = new Lot("auctionId_8217833p", 1, 2, "A mixed box of interesting items.", "20", "",
+                Lot lot = new Lot("auctionId_8217833p", 1, 2, "A mixed box of interesting items.", "20", "", 0,
                                 new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
 
                 MvcResult result = mockMvc
