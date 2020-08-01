@@ -126,7 +126,7 @@ public class CreateBuyerTest extends BuyerControllerTest {
                 Assert.assertTrue(redirectUrl.contains("/buyers?auctionId=" + buyer.getAuctionId())); // we are
                                                                                                      // redirected to
                                                                                                      // the right place
-                Assert.assertFalse(redirectUrl.contains("&error=" + URLEncoder.encode("somethings", "UTF-8"))); // we are redirected without errors
+                Assert.assertFalse(redirectUrl.contains("&error=")); // we are redirected without errors
 
 
 

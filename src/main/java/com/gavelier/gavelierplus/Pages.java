@@ -25,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.thymeleaf.util.StringUtils;
 
 @Controller
 public class Pages {
@@ -427,7 +428,41 @@ public class Pages {
                 model.addAttribute("currentAuctionId", currentAuctionId);
                 model.addAttribute("currentAuctionName",
                         currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
-                model.addAttribute("lotsForCurrentAuction", allLotsForAuction);
+
+                String page = queryParameters.get("page");
+
+                int currentPage = 1;
+                int fromIndex = 0;
+                int toIndex = 10;
+
+                if (page != null) {
+                    try {
+                        currentPage = Integer.parseInt(page);
+                        fromIndex = (currentPage-1)*10;
+                        toIndex = fromIndex + 10;
+                     }
+                     catch (NumberFormatException e)
+                     {
+                        
+                     }
+                }
+
+                int totalPages = allLotsForAuction.size() / 10;
+                int pagesMod = allLotsForAuction.size() % 10;
+                if (pagesMod > 0) {
+                    totalPages++;
+                }
+
+                if (toIndex > allLotsForAuction.size()) { 
+                    toIndex = allLotsForAuction.size();
+                }
+
+                List<Lot> lotsToPass = allLotsForAuction.subList(fromIndex, toIndex);
+
+                model.addAttribute("lotsForCurrentAuction", lotsToPass);
+                model.addAttribute("lotsPassedCount", lotsToPass.size()-1);
+                model.addAttribute("totalPages", totalPages);
+                model.addAttribute("currentPage", currentPage);
 
                 return "auctioneering";
 
