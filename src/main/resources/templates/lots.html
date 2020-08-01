@@ -237,17 +237,17 @@
             <div class="col-11">
 
 
-             <div th:if="${error}">
-              <div th:text="${error}" role="alert" class="alert alert-danger"></div>
-          </div>
+              <div th:if="${error}">
+                <div th:text="${error}" role="alert" class="alert alert-danger"></div>
+              </div>
 
 
 
-              
 
-              
 
-              <form method="POST" action="#" th:action="@{/createlot}" th:object="${lotForm}" >
+
+
+              <form method="POST" id="form" action="#" th:action="@{/createlot}" th:object="${lotForm}">
                 <div class="form-row">
                   <div class="form-group col-md-8">
                     <label for="lotName">Lot name</label>
@@ -280,7 +280,7 @@
                 <input type="hidden" name="auctionId" th:value="${currentAuctionId}" />
                 <input type="hidden" name="lotNumber" th:value="${nextLotNumber}" />
 
-                <button type="submit" class="btn btn-primary w-100">Submit lot [[${nextLotNumber}]]</button>
+                <button type="submit" id="submit" class="btn btn-primary w-100">Submit lot [[${nextLotNumber}]]</button>
               </form>
 
 
@@ -322,12 +322,14 @@
                         <td th:text="${lot.sellerNumber}"></td>
                         <td th:text="${lot.estimate}"></td>
                         <td th:text="${lot.reserve}"></td>
-                        <td><a class="nav-link" th:href="@{'/editlot?lotId=' + ${lot.id}}"><i class="fa fa-edit"></i></a></td>
-                        <td><a class="nav-link" th:href="@{'/deletelotconfirmation?lotId=' + ${lot.id}}"><i class="fas fa-trash"></i></a></td>
+                        <td><a class="nav-link" th:href="@{'/editlot?lotId=' + ${lot.id}}"><i
+                              class="fa fa-edit"></i></a></td>
+                        <td><a class="nav-link" th:href="@{'/deletelotconfirmation?lotId=' + ${lot.id}}"><i
+                              class="fas fa-trash"></i></a></td>
                       </tr>
 
                     </th:block>
-                    
+
 
 
                   </tbody>
@@ -393,6 +395,12 @@
 
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin-2.min.js"></script>
+
+  <script type="application/javascript"> 
+    $('form').submit(function () {
+      $(this).find(':submit').attr('disabled', 'disabled');
+    });
+  </script>
 
 </body>
 

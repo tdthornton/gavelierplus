@@ -70,7 +70,7 @@ public class DynamoDBService {
         
 
         if(!allExistingLots.stream().filter(existingLot -> lot.getLotNumber()==existingLot.getLotNumber()).findFirst().isPresent()) {
-            dynamoDBRepository.saveLot(lot);
+        dynamoDBRepository.saveLot(lot);
         } else {
             LOGGER.info("lot number repeated " + lot);
         }

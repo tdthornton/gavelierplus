@@ -245,7 +245,7 @@
 
               
 
-              <form method="POST" action="#" th:action="@{/createseller}" th:object="${lotForm}" >
+              <form method="POST" action="#" id="form" th:action="@{/createseller}" th:object="${lotForm}" >
                 <div class="form-row">
                   <div class="form-group col-md-8">
                     <label for="lotName">Seller name</label>
@@ -270,7 +270,7 @@
                 <input type="hidden" name="auctionId" th:value="${currentAuctionId}" />
                 <input type="hidden" name="sellerNumber" th:value="${nextSellerNumber}" />
 
-                <button type="submit" class="btn btn-primary w-100">Submit seller [[${nextSellerNumber}]]</button>
+                <button type="submit" id="submit" class="btn btn-primary w-100">Submit seller [[${nextSellerNumber}]]</button>
               </form>
 
 
@@ -380,6 +380,12 @@
 
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin-2.min.js"></script>
+
+  <script type="application/javascript"> 
+    $('form').submit(function () {
+      $(this).find(':submit').attr('disabled', 'disabled');
+    });
+  </script>
 
 </body>
 
