@@ -228,6 +228,7 @@
                                        </td>
                                        <input type="hidden" th:name="${'lots[' + i + '].id'}" th:value="${lotsForCurrentAuction[i].id}" />
                                        <input type="hidden" th:name="${'lots[' + i + '].lotNumber'}" th:value="${lotsForCurrentAuction[i].lotNumber}" />
+                                       <input type="hidden" th:name="${'lots[' + i + '].sellerNumber'}" th:value="${lotsForCurrentAuction[i].sellerNumber}" />
                                        <input type="hidden" th:name="${'lots[' + i + '].auctionId'}" th:value="${currentAuctionId}" />
                                     </tr>
                                  </th:block>

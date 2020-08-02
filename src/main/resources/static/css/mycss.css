@@ -26,3 +26,25 @@
 .nowrap {
     white-space: nowrap
 }
+
+.searchnumber {
+    font-size:115px;
+}
+
+.reportrow {
+    font-size:28px;
+}
+
+@media print {
+    body * {
+      visibility: hidden;
+    }
+    #section-to-print, #section-to-print * {
+      visibility: visible;
+    }
+    #section-to-print {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }

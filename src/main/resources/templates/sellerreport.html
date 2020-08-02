@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin 2 - Blank</title>
+  <title>Seller report</title>
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -147,7 +147,7 @@
 
 
                 <a class="dropdown-item" th:href="@{/sellers(auctionId=${auction.id})}"
-                  th:text="${auction.inputCompanyName + ' - ' + #dates.format(auction.date, 'dd-MMM-yyyy')}"></a>
+                  th:text="${auction.inputCompanyName + #dates.format(auction.date, 'dd-MMM-yyyy')}"></a>
 
               </th:block>
             </div>
@@ -227,151 +227,44 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
-          <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800" th:text="'Sellers for ' + ${currentAuctionName}"></h1>
 
-          <div class="row">
-            <div class="col">
-
-            </div>
-            <div class="col-11">
-
-
-              <div th:if="${error}">
-                <div th:text="${error}" role="alert" class="alert alert-danger"></div>
-              </div>
-
-
-
-
-
-
-
-
-
-
-            </div>
-            <div class="col">
-
-            </div>
-          </div>
-
-          <div class="row">
-
-            <!-- Area Chart -->
-            <div class="col-xl-8 col-lg-7">
-              <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-
-                </div>
-                <!-- Card Body -->
-                <div class="card-body">
-
-
-                  <form method="POST" action="#" id="form" th:action="@{/createseller}" th:object="${lotForm}">
-                    <div class="form-row">
-                      <div class="form-group col-md-8">
-                        <label for="lotName">Seller name</label>
-                        <input type="text" class="form-control" name="sellerName" id="sellerName"
-                          placeholder="Seller name" value="Mr Seller">
-                      </div>
-                      <div class="form-group col-sm">
-                        <label for="sellerNumber">Seller contact number</label>
-                        <input type="text" class="form-control" id="sellerContactNumber" value="19232837288"
-                          name="sellerContactNumber">
-                      </div>
-                    </div>
-                    <div class="form-row">
-                      <div class="form-group col-sm">
-                        <label for="estimate">Seller address</label>
-                        <input type="text" class="form-control" id="sellerAddress" value="address" name="sellerAddress">
-                        <br>
-
-                      </div>
-                    </div>
-
-                    <input type="hidden" name="userId" th:value="${name}" />
-                    <input type="hidden" name="auctionId" th:value="${currentAuctionId}" />
-                    <input type="hidden" name="sellerNumber" th:value="${nextSellerNumber}" />
-
-                    <button type="submit" id="submit" class="btn btn-primary w-100">Submit seller
-                      [[${nextSellerNumber}]]</button>
-                  </form>
-
-                </div>
-              </div>
-            </div>
-
-            <!-- Pie Chart -->
-            <div class="col-xl-4 col-lg-5">
-              <div class="card shadow mb-4">
-                <!-- Card Header - Dropdown -->
-                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                  <h6 class="m-0 font-weight-bold text-primary">Find a seller report</h6>
-
-                </div>
-                <!-- Card Body -->
-                <div class="card-body">
-
-                  <form method="GET" id="sellerReportForm" th:action="@{/sellerreport}">
-                    <input class="form-control form-control-lg searchnumber" name="sellerNumber" type="text" value="1">
-                    <input type="hidden" name="auctionId" th:value="${currentAuctionId}" />
-                    <button type="submit" id="submit" class="btn btn-primary w-100">Go to report</button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          
-
-
-          <br>
-
-
-
-          <div class="card shadow mb-4">
+        
+          <!-- DataTales Example -->
+          <div class="card shadow mb-4" id="section-to-print">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">All sellers for auction</h6>
+              <h6 class="m-0 font-weight-bold text-primary" th:text="${'Seller ' + seller.sellerNumber + ' at ' + auction.inputCompanyName + ' - ' + auction.date}"></h6>
             </div>
             <div class="card-body">
               <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>Seller Number</th>
-                      <th>Seller name</th>
-                      <th>Seller Contact number</th>
-                      <th>Seller address</th>
-                      <th>Edit</th>
-                      <th>Delete</th>
+                      <th>Lot number</th>
+                      <th>Desc</th>
+                      <th>Sale price</th>
+                      <th>To pay (inc fees)</th>
                     </tr>
                   </thead>
+                  
                   <tbody>
-                    <th:block th:each="seller : ${sellersForCurrentAuction}">
 
+                    <th:block th:each="lot : ${lotsForSeller}">
                       <tr>
-                        <td th:text="${seller.sellerNumber}"></td>
-                        <td th:text="${seller.sellerName}"></td>
-                        <td th:text="${seller.sellerContactNumber}"></td>
-                        <td th:text="${seller.sellerAddress}"></td>
-                        <td><a class="nav-link" th:href="@{'/editseller?sellerId=' + ${seller.id}}"><i
-                              class="fa fa-edit"></i></a></td>
-                        <td><a class="nav-link" th:href="@{'/deletesellerconfirmation?sellerId=' + ${seller.id}}"><i
-                              class="fas fa-trash"></i></a></td>
+                        <td class="reportrow" th:text="${lot.lotNumber}"></td>
+                        <td class="reportrow" th:text="${lot.desc}"></td>
+                        <td class="reportrow" th:text="${lot.salePrice}"></td>
+                        <td class="reportrow" th:text="${lot.paymentToSeller}"></td>
                       </tr>
-
-                    </th:block>
-
-
-
+                   </th:block>
+                    
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
+
+
+
 
 
         </div>
@@ -430,12 +323,6 @@
 
   <!-- Custom scripts for all pages-->
   <script src="js/sb-admin-2.min.js"></script>
-
-  <script type="application/javascript">
-    $('form').submit(function () {
-      $(this).find(':submit').attr('disabled', 'disabled');
-    });
-  </script>
 
 </body>
 
