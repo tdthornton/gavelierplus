@@ -84,6 +84,13 @@ public class DynamoDBService {
         dynamoDBRepository.saveLot(lot);
     }
 
+    public void updateLotSaleOnly(Lot lot) {
+        //When we sell a lot, there is no need to pass back the description, estimate, etc.
+        //We just use the ID to write the buyer number and sale price.
+        //This means a new repository method, using "Ignore null values"
+        dynamoDBRepository.updateLotSkippingNullAttributes(lot);
+    }
+
 	public void setRepository(DynamoDBRepository dynamoDBRepository2) {
         this.dynamoDBRepository=dynamoDBRepository2;
 	}

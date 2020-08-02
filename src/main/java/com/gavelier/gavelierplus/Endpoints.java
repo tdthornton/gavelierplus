@@ -287,7 +287,7 @@ public class Endpoints {
 
         for (Lot lot : lotListWrapper.getLots()) {
             if (isValidSale(lot)) {
-                dynamoDBService.updateLot(lot);
+                dynamoDBService.updateLotSaleOnly(lot);
             } else {
                 errors.add(lot.getLotNumber());
             }
