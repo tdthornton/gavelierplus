@@ -2,3 +2,49 @@
     width: 100% !important;
     height: 400px !important;
 } */
+
+.auctioneerinput {
+    font-size:40px;
+}
+
+.salepriceinput {
+    max-width:175px;
+}
+
+.buyernumberinput {
+    max-width:100px;
+}
+
+.auctioneeringdescription {
+    font-size:24px;
+}
+
+.lineunder {
+    border-bottom: 1px solid grey;
+}
+
+.nowrap {
+    white-space: nowrap
+}
+
+.searchnumber {
+    font-size:115px;
+}
+
+.reportrow {
+    font-size:28px;
+}
+
+@media print {
+    body * {
+      visibility: hidden;
+    }
+    #section-to-print, #section-to-print * {
+      visibility: visible;
+    }
+    #section-to-print {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+  }

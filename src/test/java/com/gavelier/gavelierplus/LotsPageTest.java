@@ -78,9 +78,9 @@ public class LotsPageTest extends LotsPageTestController {
 
                 Auction auction = new Auction(auctionId, "user", "Rome auction house", new Date(), 10, null, null, 0, null, null);
 
-                Lot lot1 = new Lot(auctionId, 1, 1, "Old lawnmower, no longer working.", "", "£20", null, null, null);
-                Lot lot2 = new Lot(auctionId, 2, 1, "Set of watches.", "", "£20", null, null, null);
-                Lot lot3 = new Lot(auctionId, 3, 1, "A mixed box, some interesting items in there.", "", "£20", null, null, null);
+                Lot lot1 = new Lot(auctionId, 1, 1, "Old lawnmower, no longer working.", "", "£20", 0, null, null, null);
+                Lot lot2 = new Lot(auctionId, 2, 1, "Set of watches.", "", "£20", 0, null, null, null);
+                Lot lot3 = new Lot(auctionId, 3, 1, "A mixed box, some interesting items in there.", "", "£20", 0, null, null, null);
 
                 List<Lot> lotsFromDatabase = new ArrayList<Lot>();
                 lotsFromDatabase.add(lot1);
