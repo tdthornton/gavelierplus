@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Seller report</title>
+  <title>Buyer report</title>
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -146,7 +146,7 @@
 
 
 
-                <a class="dropdown-item" th:href="@{/sellers(auctionId=${auction.id})}"
+                <a class="dropdown-item" th:href="@{/buyers(auctionId=${auction.id})}"
                   th:text="${auction.inputCompanyName + #dates.format(auction.date, 'dd-MMM-yyyy')}"></a>
 
               </th:block>
@@ -232,10 +232,10 @@
           <!-- DataTales Example -->
           <div class="card shadow mb-4" id="section-to-print">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary" th:text="${'Seller ' + seller.sellerNumber + ' at ' + auction.inputCompanyName + ' - ' + auction.date}"></h6>
+              <h6 class="m-0 font-weight-bold text-primary" th:text="${'Buyer ' + buyer.buyerNumber + ' at ' + auction.inputCompanyName + ' - ' + auction.date}"></h6>
             </div>
             <div class="card-body">
-              <span class="invoicename align-middle" th:text="${seller.sellerName}"></span><span class="invoicenumber" th:text="${seller.sellerNumber}"></span>
+              <span class="invoicename align-middle" th:text="${buyer.buyerName}"></span><span class="invoicenumber" th:text="${buyer.buyerNumber}"></span>
               <br>
               <br>
               <div class="table-responsive">
@@ -251,12 +251,12 @@
                   
                   <tbody>
 
-                    <th:block th:each="lot : ${lotsForSeller}">
+                    <th:block th:each="lot : ${lotsForBuyer}">
                       <tr>
                         <td class="reportrow" th:text="${lot.lotNumber}"></td>
                         <td class="reportrow" th:text="${lot.desc}"></td>
                         <td class="reportrow" th:text="${lot.salePrice}"></td>
-                        <td class="reportrow" th:text="${lot.paymentToSeller}"></td>
+                        <td class="reportrow" th:text="${lot.costToBuyer}"></td>
                       </tr>
                    </th:block>
                    <tr>
@@ -268,8 +268,8 @@
                    <tr>
                     <td class="reportrow"></td>
                     <td class="reportrow"></td>
-                    <td class="reportrow"><b>Total earned by seller</b></td>
-                    <td class="reportrow" th:text="${totalSalesForSeller}"></td>
+                    <td class="reportrow"><b>Total cost</b></td>
+                    <td class="reportrow" th:text="${totalPurchasesByBuyer}"></td>
                   </tr>
                   
                     
@@ -278,8 +278,8 @@
               </div>
 
             <br>
-              <p class="centerparagraph" th:text="${'The current fees for sellers are as follows: ' + auction.inputSellerFeePercentage + '%, with a minimum of ' + auction.inputSellerFeeMinimum + ' plus a fixed fee of ' + auction.inputSellerFeeFixed}"></p>
-              <p class="centerparagraph">Thank you for selling with Isle of Wight Auctions.</p>
+              <p class="centerparagraph" th:text="${'The current fees for buyers are as follows: ' + auction.inputBuyerFeePercentage + '%, with a minimum of ' + auction.inputBuyerFeeMinimum + ' plus a fixed fee of ' + auction.inputBuyerFeeFixed}"></p>
+              <p class="centerparagraph">Thank you for buying with Isle of Wight Auctions.</p>
               <p class="centerparagraph">You may find more interesting items being auctioned on our Facebook page, www.facebook.com/iwauctions.</p>
 
               
