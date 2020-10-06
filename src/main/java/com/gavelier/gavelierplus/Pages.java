@@ -475,10 +475,13 @@ public class Pages {
 
                 model.addAttribute("name", principal.getName());
 
-                model.addAttribute("currentAuctionId", currentAuctionId);
-                model.addAttribute("currentAuction", currentAuction);
+                
+                
             }
-            
+
+                model.addAttribute("currentAuctionId", currentAuctionId);
+
+                model.addAttribute("currentAuction", currentAuction);
 
                 return "auctioneering";
 
@@ -559,7 +562,7 @@ public class Pages {
                         foundSeller = true;
                     }
                 }
-                LOGGER.info("madeanewgermany");
+                
                 if (!foundSeller) {
                     return "redirect:/sellers?auctionId=" + currentAuctionId + "&error="
                             + URLEncoder.encode("Not able to find that seller in this auction.", "UTF-8");
@@ -584,7 +587,7 @@ public class Pages {
 
                 BigDecimal totalSalesForSeller = calculateTotalSales(subListOfLots);
 
-                LOGGER.info(totalSalesForSeller.toString());
+                
 
                 model.addAttribute("lotsForSeller", subListOfLots);
                 model.addAttribute("totalSalesForSeller", totalSalesForSeller);

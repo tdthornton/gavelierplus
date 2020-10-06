@@ -67,8 +67,6 @@ public class Endpoints {
                     + URLEncoder.encode(errors.toString(), "UTF-8");
         }
 
-        LOGGER.info("lot =  " + lot.toString());
-
         dynamoDBService.createLot(lot);
 
         return "redirect:/lots?auctionId=" + lot.getAuctionId();
@@ -256,6 +254,7 @@ public class Endpoints {
         }
 
         LOGGER.info(errors.toString());
+        
         if (errors.size() > 0) {
             return "redirect:/auctioneering?auctionId=" + lotListWrapper.getLots().get(0).getAuctionId() + "&page="
                     + page + "&error=" + URLEncoder.encode("Lots not saved: " + errors.toString(), "UTF-8");

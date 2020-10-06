@@ -62,9 +62,6 @@ public class DynamoDBRepository {
             throw e;
         }
 
-        LOGGER.info("LIST OF LOTS FOR AUCTION " + auctionId + ": ");
-        LOGGER.info(lots.toString());
-
         return lots;
 
     }
@@ -86,8 +83,6 @@ public class DynamoDBRepository {
             throw e;
         }
 
-        LOGGER.info("LIST OF SELLERS FOR AUCTION " + auctionId + ": ");
-        LOGGER.info(sellers.toString());
 
         return sellers;
 
@@ -110,8 +105,6 @@ public class DynamoDBRepository {
             throw e;
         }
 
-        LOGGER.info("LIST OF BUYERS FOR AUCTION " + auctionId + ": ");
-        LOGGER.info(buyers.toString());
 
         return buyers;
 
