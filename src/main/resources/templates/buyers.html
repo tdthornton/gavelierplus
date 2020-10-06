@@ -245,38 +245,79 @@
 
               
 
-              <form method="POST" id="form" action="#" th:action="@{/createbuyer}" th:object="${buyerForm}" >
-                <div class="form-row">
-                  <div class="form-group col-md-8">
-                    <label for="lotName">Buyer name</label>
-                    <input type="text" class="form-control" name="buyerName" id="buyerName" placeholder="Buyer name"
-                      value="Mr Buyer">
-                  </div>
-                  <div class="form-group col-sm">
-                    <label for="buyerNumber">Buyer contact number</label>
-                    <input type="text" class="form-control" id="buyerContactNumber" value="19232837288" name="buyerContactNumber">
-                  </div>
-                </div>
-                <div class="form-row">
-                  <div class="form-group col-sm">
-                    <label for="estimate">Buyer address</label>
-                    <input type="text" class="form-control" id="buyerAddress" value="address" name="buyerAddress">
-                    <br>
-
-                  </div>
-                </div>
-
-                <input type="hidden" name="userId" th:value="${name}" />
-                <input type="hidden" name="auctionId" th:value="${currentAuctionId}" />
-                <input type="hidden" name="buyerNumber" th:value="${nextBuyerNumber}" />
-
-                <button type="submit" id="submit" class="btn btn-primary w-100">Submit buyer [[${nextBuyerNumber}]]</button>
-              </form>
+              
 
 
             </div>
             <div class="col">
 
+            </div>
+          </div>
+
+          <div class="row">
+
+            <!-- Area Chart -->
+            <div class="col-xl-8 col-lg-7">
+              <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">Enter new buyer</h6>
+
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+
+
+                  <form method="POST" id="form" action="#" th:action="@{/createbuyer}" th:object="${buyerForm}" >
+                    <div class="form-row">
+                      <div class="form-group col-md-8">
+                        <label for="lotName">Buyer name</label>
+                        <input type="text" class="form-control" name="buyerName" id="buyerName" placeholder="Buyer name"
+                          value="Mr Buyer">
+                      </div>
+                      <div class="form-group col-sm">
+                        <label for="buyerNumber">Buyer contact number</label>
+                        <input type="text" class="form-control" id="buyerContactNumber" value="19232837288" name="buyerContactNumber">
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group col-sm">
+                        <label for="estimate">Buyer address</label>
+                        <input type="text" class="form-control" id="buyerAddress" value="address" name="buyerAddress">
+                        <br>
+    
+                      </div>
+                    </div>
+    
+                    <input type="hidden" name="userId" th:value="${name}" />
+                    <input type="hidden" name="auctionId" th:value="${currentAuctionId}" />
+                    <input type="hidden" name="buyerNumber" th:value="${nextBuyerNumber}" />
+    
+                    <button type="submit" id="submit" class="btn btn-primary w-100">Submit buyer [[${nextBuyerNumber}]]</button>
+                  </form>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- Pie Chart -->
+            <div class="col-xl-4 col-lg-5">
+              <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h6 class="m-0 font-weight-bold text-primary">Get report for buyer number</h6>
+
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+
+                  <form method="GET" id="sellerReportForm" th:action="@{/buyerreport}">
+                    <input class="form-control form-control-lg searchnumber" name="buyerNumber" type="text" value="1">
+                    <input type="hidden" name="auctionId" th:value="${currentAuctionId}" />
+                    <button type="submit" id="submit" class="btn btn-primary w-100">Go to report</button>
+                  </form>
+                </div>
+              </div>
             </div>
           </div>
 
