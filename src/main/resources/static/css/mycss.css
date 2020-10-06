@@ -48,3 +48,19 @@
       top: 0;
     }
   }
+
+  .invoicename {
+    font-size: 45px;
+  }
+
+  .invoicenumber {
+    font-size: 45px;
+    float: right;
+    border: 6px solid; 
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .centerparagraph {
+      text-align:center;
+  }

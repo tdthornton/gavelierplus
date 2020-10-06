@@ -75,9 +75,6 @@ public class Pages {
 
         LOGGER.info("Access to dashboard page");
 
-        String currentAuctionId = queryParameters.get("auctionId");
-        model.addAttribute("currentAuctionId", currentAuctionId);
-
         model.addAttribute("name", principal.getName());
 
         return "dashboard";
@@ -144,8 +141,7 @@ public class Pages {
 
                 }
                 model.addAttribute("currentAuctionId", currentAuctionId);
-                model.addAttribute("currentAuctionName",
-                        currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
+                model.addAttribute("currentAuction", currentAuction);
                 model.addAttribute("lotsForCurrentAuction", allLotsForAuction);
 
                 return "lots";
@@ -329,8 +325,7 @@ public class Pages {
 
                 }
                 model.addAttribute("currentAuctionId", currentAuctionId);
-                model.addAttribute("currentAuctionName",
-                        currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
+                model.addAttribute("currentAuction", currentAuction);
                 model.addAttribute("sellersForCurrentAuction", allSellers);
 
                 return "sellers";
@@ -392,8 +387,7 @@ public class Pages {
 
                 }
                 model.addAttribute("currentAuctionId", currentAuctionId);
-                model.addAttribute("currentAuctionName",
-                        currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
+                model.addAttribute("currentAuction", currentAuction);
                 model.addAttribute("buyersForCurrentAuction", allBuyers);
 
                 return "buyers";
@@ -438,11 +432,7 @@ public class Pages {
                         .sorted((lot1, lot2) -> Integer.compare(lot1.getLotNumber(), lot2.getLotNumber()))
                         .collect(toList());
 
-                model.addAttribute("name", principal.getName());
-
-                model.addAttribute("currentAuctionId", currentAuctionId);
-                model.addAttribute("currentAuctionName",
-                        currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
+                if (allLotsForAuction.size()!=0) {
 
                 String page = queryParameters.get("page");
 
@@ -472,10 +462,23 @@ public class Pages {
 
                 List<Lot> lotsToPass = allLotsForAuction.subList(fromIndex, toIndex);
 
-                model.addAttribute("lotsForCurrentAuction", lotsToPass);
-                model.addAttribute("lotsPassedCount", lotsToPass.size() - 1);
+                
                 model.addAttribute("totalPages", totalPages);
                 model.addAttribute("currentPage", currentPage);
+                model.addAttribute("lotsForCurrentAuction", lotsToPass);
+                model.addAttribute("lotsPassedCount", lotsToPass.size() - 1);
+
+            } else {
+                model.addAttribute("totalPages", 1);
+                model.addAttribute("currentPage", 1);
+                model.addAttribute("lotsPassedCount", 0);
+
+                model.addAttribute("name", principal.getName());
+
+                model.addAttribute("currentAuctionId", currentAuctionId);
+                model.addAttribute("currentAuction", currentAuction);
+            }
+            
 
                 return "auctioneering";
 
@@ -556,7 +559,7 @@ public class Pages {
                         foundSeller = true;
                     }
                 }
-
+                LOGGER.info("madeanewgermany");
                 if (!foundSeller) {
                     return "redirect:/sellers?auctionId=" + currentAuctionId + "&error="
                             + URLEncoder.encode("Not able to find that seller in this auction.", "UTF-8");
@@ -570,17 +573,24 @@ public class Pages {
 
                 for (Lot lot : allLotsForAuction) {
                     if (lot.getSellerNumber() == sellerNumber) {
-                        if (lot.getSalePrice()!=null) {
+                        if (lot.getSalePrice() != null) {
                             lot.setSalePrice(lot.getSalePrice().setScale(2, RoundingMode.HALF_UP));
                         }
                         subListOfLots.add(lot);
                     }
                 }
 
-                model.addAttribute("lotsForSeller", addSellerFees(subListOfLots, auction));
+                subListOfLots = addSellerFees(subListOfLots, auction);
+
+                BigDecimal totalSalesForSeller = calculateTotalSales(subListOfLots);
+
+                LOGGER.info(totalSalesForSeller.toString());
+
+                model.addAttribute("lotsForSeller", subListOfLots);
+                model.addAttribute("totalSalesForSeller", totalSalesForSeller);
                 model.addAttribute("auction", auction);
 
-                return "sellerreport";
+               return "sellerreport";
 
             } else {
                 return "redirect:/sellers?auctionId=" + currentAuctionId + "&error=" + URLEncoder
@@ -592,6 +602,18 @@ public class Pages {
                     + URLEncoder.encode("No seller number provided.", "UTF-8");
         }
 
+    }
+
+    private BigDecimal calculateTotalSales(List<Lot> subListOfLots) {
+        BigDecimal total = new BigDecimal("0.00");
+        total.setScale(2, RoundingMode.HALF_UP);
+
+        
+BigDecimal result = subListOfLots.stream()
+        .map(Lot::getPaymentToSeller)
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return result;
     }
 
     private List<Lot> addSellerFees(List<Lot> subListOfLots, Auction auction) {
