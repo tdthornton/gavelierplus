@@ -633,7 +633,7 @@ public class Pages {
                 finalPaymentToSeller = lot.getSalePrice().setScale(2, RoundingMode.HALF_UP);
 
                 BigDecimal percentageFee = lot.getSalePrice()
-                        .divide(new BigDecimal(auction.getInputSellerFeePercentage()), 2, RoundingMode.HALF_UP);
+                        .multiply(new BigDecimal("0." + auction.getInputSellerFeePercentage())).setScale(2, RoundingMode.HALF_UP);
 
                 if (percentageFee.compareTo(minimumFee) > 0) {
                     finalPaymentToSeller = finalPaymentToSeller.subtract(percentageFee);
@@ -771,7 +771,7 @@ public class Pages {
                 finalCostToBuyer = lot.getSalePrice().setScale(2, RoundingMode.HALF_UP);
 
                 BigDecimal percentageFee = lot.getSalePrice()
-                        .divide(new BigDecimal(auction.getInputBuyerFeePercentage()), 2, RoundingMode.HALF_UP);
+                        .multiply(new BigDecimal("0." + auction.getInputBuyerFeePercentage())).setScale(2, RoundingMode.HALF_UP);
 
                 if (percentageFee.compareTo(minimumFee) > 0) {
                     finalCostToBuyer = finalCostToBuyer.add(percentageFee);
