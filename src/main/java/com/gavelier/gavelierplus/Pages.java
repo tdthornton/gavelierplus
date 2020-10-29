@@ -77,6 +77,10 @@ public class Pages {
 
         model.addAttribute("name", principal.getName());
 
+        model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+
+        model.addAttribute("error", queryParameters.get("error"));
+
         return "dashboard";
 
     }
@@ -421,6 +425,7 @@ public class Pages {
         model.addAttribute("error", queryParameters.get("error"));
 
         if (currentAuctionId != null && currentAuctionId != "null") {
+
             Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
 
             if (currentAuction != null && currentAuction.getUserId().equals(principal.getName())) { // if the auction
@@ -626,7 +631,11 @@ public class Pages {
 
             BigDecimal minimumFee = auction.getInputSellerFeeMinimum().setScale(2, RoundingMode.HALF_UP);
 
-            BigDecimal fixedAdditionalFee = auction.getInputSellerFeeFixed().setScale(2, RoundingMode.HALF_UP);
+            BigDecimal fixedAdditionalFee = new BigDecimal("0.00");
+
+            if (auction.getInputSellerFeeFixed() != null ) {
+                fixedAdditionalFee = auction.getInputSellerFeeFixed().setScale(2, RoundingMode.HALF_UP);
+            }
 
             if (lot.getSalePrice() != null) {
 
@@ -764,7 +773,13 @@ public class Pages {
 
             BigDecimal minimumFee = auction.getInputBuyerFeeMinimum().setScale(2, RoundingMode.HALF_UP);
 
-            BigDecimal fixedAdditionalFee = auction.getInputBuyerFeeFixed().setScale(2, RoundingMode.HALF_UP);
+            BigDecimal fixedAdditionalFee = new BigDecimal("0.00");
+
+            if (auction.getInputBuyerFeeFixed() != null) {
+                fixedAdditionalFee = auction.getInputBuyerFeeFixed().setScale(2, RoundingMode.HALF_UP);
+            } else {
+                fixedAdditionalFee = new BigDecimal("0.00").setScale(2, RoundingMode.HALF_UP);
+            }
 
             if (lot.getSalePrice() != null) {
 
@@ -784,7 +799,7 @@ public class Pages {
                 finalCostToBuyer = new BigDecimal("0.00").setScale(2, RoundingMode.HALF_UP);
             }
 
-            finalCostToBuyer = finalCostToBuyer.subtract(fixedAdditionalFee);
+            finalCostToBuyer = finalCostToBuyer.add(fixedAdditionalFee);
 
             lot.setCostToBuyer(finalCostToBuyer);
 
