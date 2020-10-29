@@ -629,7 +629,13 @@ public class Pages {
 
             BigDecimal finalPaymentToSeller;
 
-            BigDecimal minimumFee = auction.getInputSellerFeeMinimum().setScale(2, RoundingMode.HALF_UP);
+            
+
+            BigDecimal minimumFee = new BigDecimal("0.00");
+
+            if (auction.getInputSellerFeeMinimum() != null) {
+                minimumFee = auction.getInputSellerFeeMinimum().setScale(2, RoundingMode.HALF_UP);
+            }
 
             BigDecimal fixedAdditionalFee = new BigDecimal("0.00");
 
@@ -771,7 +777,11 @@ public class Pages {
 
             BigDecimal finalCostToBuyer;
 
-            BigDecimal minimumFee = auction.getInputBuyerFeeMinimum().setScale(2, RoundingMode.HALF_UP);
+            BigDecimal minimumFee = new BigDecimal("0.00");
+
+            if (auction.getInputBuyerFeeMinimum() != null) {
+                minimumFee = auction.getInputBuyerFeeMinimum().setScale(2, RoundingMode.HALF_UP);
+            }
 
             BigDecimal fixedAdditionalFee = new BigDecimal("0.00");
 
