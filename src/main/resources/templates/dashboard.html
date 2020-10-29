@@ -130,6 +130,33 @@
             <i class="fa fa-bars"></i>
           </button>
 
+
+          <div class="dropdown w-100">
+            <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Switch Auction
+            </button>
+
+
+            <div class="dropdown-menu text-center" aria-labelledby="dropdownMenuButton">
+
+              <th:block th:each="auction : ${allAuctionsForUser}">
+
+
+
+                <a class="dropdown-item" th:href="@{/lots(auctionId=${auction.id})}"
+                  th:text="${auction.inputCompanyName + ' - ' + #dates.format(auction.date, 'dd-MMM-yyyy')}"></a>
+
+              </th:block>
+            </div>
+
+
+
+
+          </div>
+
+          
+
           <!-- Topbar Navbar -->
           <ul class="navbar-nav ml-auto">
 
