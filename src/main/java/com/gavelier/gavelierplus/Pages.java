@@ -590,12 +590,12 @@ public class Pages {
 
                 subListOfLots = applySellerFees(subListOfLots, auction);
 
-                BigDecimal totalSalesForSeller = calculateTotalSales(subListOfLots);
-
                 
 
                 model.addAttribute("lotsForSeller", subListOfLots);
-                model.addAttribute("totalSalesForSeller", totalSalesForSeller);
+                model.addAttribute("totalSalesForSeller", calculateTotalSoldBySeller(subListOfLots));
+                model.addAttribute("totalSellerFees", calculateTotalSellerFees(subListOfLots));
+                model.addAttribute("sellerFinalTotal", calculateFinalPaymentToSeller(subListOfLots));
                 model.addAttribute("auction", auction);
 
                return "sellerreport";
@@ -612,16 +612,37 @@ public class Pages {
 
     }
 
-    private BigDecimal calculateTotalSales(List<Lot> subListOfLots) {
-        BigDecimal total = new BigDecimal("0.00");
-        total.setScale(2, RoundingMode.HALF_UP);
+    private BigDecimal calculateTotalSoldBySeller(List<Lot> subListOfLots) {
+        BigDecimal totalSoldBySeller = new BigDecimal("0.00");
+        totalSoldBySeller.setScale(2, RoundingMode.HALF_UP);
 
-        
-        BigDecimal result = subListOfLots.stream()
-        .map(Lot::getPaymentToSeller)
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        for (Lot lot: subListOfLots) {
+            totalSoldBySeller = totalSoldBySeller.add(lot.getSalePrice()).setScale(2, RoundingMode.HALF_UP);
+        }
 
-        return result;
+        return totalSoldBySeller;
+    }
+
+    private BigDecimal calculateTotalSellerFees(List<Lot> subListOfLots) {
+        BigDecimal totalSellerFees = new BigDecimal("0.00");
+        totalSellerFees.setScale(2, RoundingMode.HALF_UP);
+
+        for (Lot lot: subListOfLots) {
+            totalSellerFees = totalSellerFees.add(lot.getSellerFees()).setScale(2, RoundingMode.HALF_UP);
+        }
+
+        return totalSellerFees;
+    }
+
+    private BigDecimal calculateFinalPaymentToSeller(List<Lot> subListOfLots) {
+        BigDecimal finalPaymentToSeller = new BigDecimal("0.00");
+        finalPaymentToSeller.setScale(2, RoundingMode.HALF_UP);
+
+        for (Lot lot: subListOfLots) {
+            finalPaymentToSeller = finalPaymentToSeller.add(lot.getPaymentToSeller()).setScale(2, RoundingMode.HALF_UP);
+        }
+
+        return finalPaymentToSeller;
     }
 
     private List<Lot> applySellerFees(List<Lot> subListOfLots, Auction auction) {
@@ -632,15 +653,14 @@ public class Pages {
             
 
             BigDecimal minimumFee = new BigDecimal("0.00");
+            BigDecimal totalFees = new BigDecimal("0.00");
 
             if (auction.getInputSellerFeeMinimum() != null) {
                 minimumFee = auction.getInputSellerFeeMinimum().setScale(2, RoundingMode.HALF_UP);
             }
 
-            BigDecimal fixedAdditionalFee = new BigDecimal("0.00");
-
             if (auction.getInputSellerFeeFixed() != null ) {
-                fixedAdditionalFee = auction.getInputSellerFeeFixed().setScale(2, RoundingMode.HALF_UP);
+                totalFees = totalFees.add(auction.getInputSellerFeeFixed());
             }
 
             if (lot.getSalePrice() != null) {
@@ -651,9 +671,9 @@ public class Pages {
                         .multiply(new BigDecimal("0." + auction.getInputSellerFeePercentage())).setScale(2, RoundingMode.HALF_UP);
 
                 if (percentageFee.compareTo(minimumFee) > 0) {
-                    finalPaymentToSeller = finalPaymentToSeller.subtract(percentageFee);
+                    totalFees = totalFees.add(percentageFee);
                 } else {
-                    finalPaymentToSeller = finalPaymentToSeller.subtract(minimumFee);
+                    totalFees = totalFees.add(minimumFee);
                 }
 
             } else {
@@ -661,9 +681,9 @@ public class Pages {
                 finalPaymentToSeller = new BigDecimal("0.00").setScale(2, RoundingMode.HALF_UP);
             }
 
-            finalPaymentToSeller = finalPaymentToSeller.subtract(fixedAdditionalFee);
+            lot.setSellerFees(totalFees);
 
-            lot.setPaymentToSeller(finalPaymentToSeller);
+            lot.setPaymentToSeller(finalPaymentToSeller.subtract(totalFees));
 
         }
 
@@ -743,6 +763,8 @@ public class Pages {
 
                 model.addAttribute("lotsForBuyer", subListOfLots);
                 model.addAttribute("totalPurchasesByBuyer", totalPurchasesByBuyer);
+                model.addAttribute("totalBuyerFees", calculateTotalBuyerFees(subListOfLots));
+                model.addAttribute("totalCost", calculateTotalCost(subListOfLots));
                 model.addAttribute("auction", auction);
 
                return "buyerreport";
@@ -760,27 +782,48 @@ public class Pages {
     }
 
     private BigDecimal calculateTotalPurchases(List<Lot> subListOfLots) {
-        BigDecimal total = new BigDecimal("0.00");
-        total.setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalPurchases = new BigDecimal("0.00");
+        totalPurchases.setScale(2, RoundingMode.HALF_UP);
+        
+        for (Lot lot: subListOfLots) {
+            totalPurchases = totalPurchases.add(lot.getSalePrice()).setScale(2, RoundingMode.HALF_UP);
+        }
 
-        //TODO check the maths further, can't get these two methods wrong by a penny.
-        BigDecimal result = subListOfLots.stream()
-        .map(Lot::getCostToBuyer)
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return totalPurchases;
+    }
 
-        return result;
+    private BigDecimal calculateTotalBuyerFees(List<Lot> subListOfLots) {
+        BigDecimal totalBuyerFees = new BigDecimal("0.00");
+        totalBuyerFees.setScale(2, RoundingMode.HALF_UP);
+
+        for (Lot lot: subListOfLots) {
+            totalBuyerFees = totalBuyerFees.add(lot.getBuyerFees()).setScale(2, RoundingMode.HALF_UP);
+        }
+
+        return totalBuyerFees;
+    }
+
+    private BigDecimal calculateTotalCost(List<Lot> subListOfLots) {
+        BigDecimal totalCost = new BigDecimal("0.00");
+        totalCost.setScale(2, RoundingMode.HALF_UP);
+
+        for (Lot lot: subListOfLots) {
+            totalCost = totalCost.add(lot.getCostToBuyer()).setScale(2, RoundingMode.HALF_UP);
+        }
+
+        return totalCost;
     }
 
     private List<Lot> applyBuyerFees(List<Lot> subListOfLots, Auction auction) {
         
         for (Lot lot : subListOfLots) {
 
-            BigDecimal finalCostToBuyer;
+            BigDecimal totalBuyerFees = new BigDecimal("0.00");
 
-            BigDecimal minimumFee = new BigDecimal("0.00");
+            BigDecimal feeUnderTen = new BigDecimal("0.00");
 
             if (auction.getInputBuyerFeeMinimum() != null) {
-                minimumFee = auction.getInputBuyerFeeMinimum().setScale(2, RoundingMode.HALF_UP);
+                feeUnderTen = auction.getInputBuyerFeeMinimum().setScale(2, RoundingMode.HALF_UP);
             }
 
             BigDecimal fixedAdditionalFee = new BigDecimal("0.00");
@@ -791,27 +834,26 @@ public class Pages {
                 fixedAdditionalFee = new BigDecimal("0.00").setScale(2, RoundingMode.HALF_UP);
             }
 
-            if (lot.getSalePrice() != null) {
+            totalBuyerFees = totalBuyerFees.add(fixedAdditionalFee);
 
-                finalCostToBuyer = lot.getSalePrice().setScale(2, RoundingMode.HALF_UP);
+            if (lot.getSalePrice() != null) {
 
                 BigDecimal percentageFee = lot.getSalePrice()
                         .multiply(new BigDecimal("0." + auction.getInputBuyerFeePercentage())).setScale(2, RoundingMode.HALF_UP);
 
-                if (percentageFee.compareTo(minimumFee) > 0) {
-                    finalCostToBuyer = finalCostToBuyer.add(percentageFee);
+                if (lot.getSalePrice().compareTo(new BigDecimal("10.00")) > 0) {
+                    totalBuyerFees = totalBuyerFees.add(percentageFee);
                 } else {
-                    finalCostToBuyer = finalCostToBuyer.add(minimumFee);
+                    totalBuyerFees = totalBuyerFees.add(feeUnderTen);
                 }
 
-            } else {
+                lot.setCostToBuyer(lot.getSalePrice().add(totalBuyerFees));
 
-                finalCostToBuyer = new BigDecimal("0.00").setScale(2, RoundingMode.HALF_UP);
             }
 
-            finalCostToBuyer = finalCostToBuyer.add(fixedAdditionalFee);
+            
 
-            lot.setCostToBuyer(finalCostToBuyer);
+            lot.setBuyerFees(totalBuyerFees);
 
         }
 
