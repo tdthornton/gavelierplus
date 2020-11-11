@@ -47,6 +47,9 @@ public class Lot implements Serializable {
 
     private BigDecimal salePrice;
 
+    private BigDecimal buyerFees;
+    private BigDecimal sellerFees;
+
     private BigDecimal costToBuyer;
 
     private BigDecimal paymentToSeller;
@@ -55,7 +58,7 @@ public class Lot implements Serializable {
     }
 
     public Lot(String id, String auctionId, int sellerNumber, int lotNumber, String desc, String estimate,
-            String reserve, int buyerNumber, BigDecimal salePrice, BigDecimal costToBuyer, BigDecimal paymentToSeller) {
+            String reserve, int buyerNumber, BigDecimal salePrice, BigDecimal buyerFees, BigDecimal sellerFees, BigDecimal costToBuyer, BigDecimal paymentToSeller) {
         this.id = id;
         this.auctionId = auctionId;
         this.sellerNumber = sellerNumber;
@@ -65,12 +68,14 @@ public class Lot implements Serializable {
         this.reserve = reserve;
         this.buyerNumber = buyerNumber;
         this.salePrice = salePrice;
+        this.salePrice = buyerFees;
+        this.salePrice = sellerFees;
         this.costToBuyer = costToBuyer;
         this.paymentToSeller = paymentToSeller;
     }
 
     public Lot(String auctionId, int sellerNumber, int lotNumber, String desc, String estimate, String reserve, int buyerNumber,
-            BigDecimal salePrice, BigDecimal costToBuyer, BigDecimal paymentToSeller) {
+            BigDecimal salePrice, BigDecimal buyerFees, BigDecimal sellerFees, BigDecimal costToBuyer, BigDecimal paymentToSeller) {
         this.auctionId = auctionId;
         this.sellerNumber = sellerNumber;
         this.lotNumber = lotNumber;
@@ -79,6 +84,8 @@ public class Lot implements Serializable {
         this.reserve = reserve;
         this.buyerNumber = buyerNumber;
         this.salePrice = salePrice;
+        this.salePrice = buyerFees;
+        this.salePrice = sellerFees;
         this.costToBuyer = costToBuyer;
         this.paymentToSeller = paymentToSeller;
     }
@@ -167,6 +174,24 @@ public class Lot implements Serializable {
     }
 
     @DynamoDBAttribute
+    public BigDecimal getBuyerFees() {
+        return this.buyerFees;
+    }
+
+    public void setBuyerFees(BigDecimal buyerFees) {
+        this.buyerFees = buyerFees;
+    }
+
+    @DynamoDBAttribute
+    public BigDecimal getSellerFees() {
+        return this.sellerFees;
+    }
+
+    public void setSellerFees(BigDecimal sellerFees) {
+        this.sellerFees = sellerFees;
+    }
+
+    @DynamoDBAttribute
     public BigDecimal getCostToBuyer() {
         return this.costToBuyer;
     }
@@ -184,8 +209,6 @@ public class Lot implements Serializable {
         this.paymentToSeller = paymentToSeller;
     }
 
-    
-
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -194,17 +217,31 @@ public class Lot implements Serializable {
             return false;
         }
         Lot lot = (Lot) o;
-        return Objects.equals(id, lot.id) && Objects.equals(auctionId, lot.auctionId) && sellerNumber == lot.sellerNumber && lotNumber == lot.lotNumber && buyerNumber == lot.buyerNumber& Objects.equals(desc, lot.desc) && Objects.equals(estimate, lot.estimate) && Objects.equals(reserve, lot.reserve) && Objects.equals(salePrice, lot.salePrice) && Objects.equals(costToBuyer, lot.costToBuyer) && Objects.equals(paymentToSeller, lot.paymentToSeller);
+        return Objects.equals(id, lot.id) && Objects.equals(auctionId, lot.auctionId) && sellerNumber == lot.sellerNumber && lotNumber == lot.lotNumber && Objects.equals(desc, lot.desc) && Objects.equals(estimate, lot.estimate) && Objects.equals(reserve, lot.reserve) && buyerNumber == lot.buyerNumber && Objects.equals(salePrice, lot.salePrice) && Objects.equals(buyerFees, lot.buyerFees) && Objects.equals(sellerFees, lot.sellerFees) && Objects.equals(costToBuyer, lot.costToBuyer) && Objects.equals(paymentToSeller, lot.paymentToSeller);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, auctionId, sellerNumber, lotNumber, desc, estimate, reserve, buyerNumber, salePrice, buyerFees, sellerFees, costToBuyer, paymentToSeller);
     }
 
     @Override
     public String toString() {
-        return "{" + " id='" + getId() + "'" + ", auctionId='" + getAuctionId() + "'" + ", sellerNumber='"
-                + getSellerNumber() + "'" + ", lotNumber='" + getLotNumber() + "'" + ", desc='" + getDesc() + "'"
-                + ", estimate='" + getEstimate() + "'" + ", reserve='" + getReserve() + "'" + ", buyerNumber='"
-                + getBuyerNumber() + ", salePrice='"
-                + getSalePrice() + "'" + ", costToBuyer='" + getCostToBuyer() + "'" + ", paymentToSeller='"
-                + getPaymentToSeller() + "'" + "}";
-    }
+        return "{" +
+            " id='" + getId() + "'" +
+            ", auctionId='" + getAuctionId() + "'" +
+            ", sellerNumber='" + getSellerNumber() + "'" +
+            ", lotNumber='" + getLotNumber() + "'" +
+            ", desc='" + getDesc() + "'" +
+            ", estimate='" + getEstimate() + "'" +
+            ", reserve='" + getReserve() + "'" +
+            ", buyerNumber='" + getBuyerNumber() + "'" +
+            ", salePrice='" + getSalePrice() + "'" +
+            ", buyerFees='" + getBuyerFees() + "'" +
+            ", sellerFees='" + getSellerFees() + "'" +
+            ", costToBuyer='" + getCostToBuyer() + "'" +
+            ", paymentToSeller='" + getPaymentToSeller() + "'" +
+            "}";
+    }    
 
 }
