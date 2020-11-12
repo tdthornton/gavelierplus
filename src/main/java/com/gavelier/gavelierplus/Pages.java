@@ -515,17 +515,23 @@ public class Pages {
         String currentAuctionId = queryParameters.get("auctionId");
         model.addAttribute("currentAuctionId", currentAuctionId);
 
+        model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+
         if (currentAuctionId != null && currentAuctionId != "null"){ 
 
             Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
 
             if (currentAuction != null) {
                 model.addAttribute("currentAuction", currentAuction);
+            } else {
+                return "emptydocuments";
             }
 
+        } else {
+            return "emptydocuments";
         }
 
-        model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+        
     
 
         model.addAttribute("name", principal.getName());
@@ -897,10 +903,14 @@ public class Pages {
                 model.addAttribute("totalRevenue", totalSellerFees.add(totalBuyerFees).setScale(2, RoundingMode.HALF_UP));
                 model.addAttribute("totalSellerFees", totalSellerFees.setScale(2, RoundingMode.HALF_UP));
                 model.addAttribute("totalBuyerFees", totalBuyerFees.setScale(2, RoundingMode.HALF_UP));
+            } else {
+                return "emptyarchive";
             }
 
             
 
+        } else {
+            return "emptyarchive";
         }
 
         
