@@ -515,10 +515,18 @@ public class Pages {
         String currentAuctionId = queryParameters.get("auctionId");
         model.addAttribute("currentAuctionId", currentAuctionId);
 
-        Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
-        model.addAttribute("currentAuction", currentAuction);
+        if (currentAuctionId != null && currentAuctionId != "null"){ 
+
+            Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+            if (currentAuction != null) {
+                model.addAttribute("currentAuction", currentAuction);
+            }
+
+        }
 
         model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+    
 
         model.addAttribute("name", principal.getName());
 
@@ -814,7 +822,9 @@ public class Pages {
         totalPurchases.setScale(2, RoundingMode.HALF_UP);
         
         for (Lot lot: subListOfLots) {
-            totalPurchases = totalPurchases.add(lot.getSalePrice());
+            if (lot.getSalePrice() != null) {
+                totalPurchases = totalPurchases.add(lot.getSalePrice());
+            }
         }
 
         return totalPurchases.setScale(2, RoundingMode.HALF_UP);
@@ -839,8 +849,10 @@ public class Pages {
         totalCost.setScale(2, RoundingMode.HALF_UP);
 
         for (Lot lot: subListOfLots) {
-            totalCost = totalCost.add(lot.getCostToBuyer()).setScale(2, RoundingMode.HALF_UP);
-            lot.setCostToBuyer(lot.getCostToBuyer().setScale(2, RoundingMode.HALF_UP));
+            if (lot.getCostToBuyer() != null) {
+                totalCost = totalCost.add(lot.getCostToBuyer()).setScale(2, RoundingMode.HALF_UP);
+                lot.setCostToBuyer(lot.getCostToBuyer().setScale(2, RoundingMode.HALF_UP));
+            }
         }
 
         return totalCost.setScale(2, RoundingMode.HALF_UP);
