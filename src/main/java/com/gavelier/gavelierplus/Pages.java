@@ -895,14 +895,24 @@ public class Pages {
 
                 model.addAttribute("allLots", allLotsForAuction);
 
+                model.addAttribute("allSellers", dynamoDBService.getAllSellersForAuction(currentAuctionId).stream()
+                .sorted((seller1, seller2) -> Integer.compare(seller1.getSellerNumber(), seller2.getSellerNumber()))
+                .collect(toList()));
+
+                model.addAttribute("allBuyers", dynamoDBService.getAllBuyersForAuction(currentAuctionId).stream()
+                .sorted((buyer1, buyer2) -> Integer.compare(buyer1.getBuyerNumber(), buyer2.getBuyerNumber()))
+                .collect(toList()));
+
 
                 BigDecimal totalSellerFees = calculateTotalSellerFees(allLotsForAuction);
                 BigDecimal totalBuyerFees = calculateTotalBuyerFees(allLotsForAuction);
+                BigDecimal totalSalePrices = calculateTotalPurchases(allLotsForAuction);
 
 
                 model.addAttribute("totalRevenue", totalSellerFees.add(totalBuyerFees).setScale(2, RoundingMode.HALF_UP));
                 model.addAttribute("totalSellerFees", totalSellerFees.setScale(2, RoundingMode.HALF_UP));
                 model.addAttribute("totalBuyerFees", totalBuyerFees.setScale(2, RoundingMode.HALF_UP));
+                model.addAttribute("totalSalePrices", totalSalePrices.setScale(2, RoundingMode.HALF_UP));
             } else {
                 return "emptyarchive";
             }

@@ -26,10 +26,11 @@
   <table class="table table-bordered " id="section-to-print" width="100%" cellspacing="0">
     <thead>
       <tr>
-        <th>Lot Number</th>
-        <th>Description</th>
-        <th>Buyer Number</th>
-        <th>Sale Price</th>
+        <th class="fontblack" style="width: 5%;"></th>
+        <th class="fontblack" style="width: 50%;">Description</th>
+        <th class="fontblack" style="width: 5%;">Reserve</th>
+        <th class="fontblack" style="width: 20%;">Buyer Number</th>
+        <th class="fontblack" style="width: 20%;">Sale Price</th>
       </tr>
     </thead>
     <tbody class="fontblack">
@@ -38,6 +39,7 @@
         <tr class="sheet-row">
           <td th:text="${lot.lotNumber}"></td>
           <td th:text="${lot.desc}"></td>
+          <td class="fontred" th:text="${lot.reserve}"></td>
           <td></td>
           <td></td>
           
