@@ -256,9 +256,9 @@
                       <tr>
                         <td class="reportrow" th:text="${lot.lotNumber}"></td>
                         <td class="reportrow" th:text="${lot.desc}"></td>
-                        <td class="reportrow" th:text="${lot.salePrice}"></td>
-                        <td class="reportrow" th:text="${lot.buyerFees}"></td>
-                        <td class="reportrow" th:text="${lot.costToBuyer}"></td>
+                        <td class="reportrow td-money" th:text="${lot.salePrice}"></td>
+                        <td class="reportrow td-money" th:text="${lot.buyerFees}"></td>
+                        <td class="reportrow td-money" th:text="${lot.costToBuyer}"></td>
                       </tr>
                    </th:block>
                    <tr>
@@ -273,21 +273,21 @@
                     <td class="reportrowsmall"></td>
                     <td class="reportrowsmall"></td>
                     <td class="reportrowsmall">Total purchases</td>
-                    <td class="reportrowsmall" th:text="${totalPurchasesByBuyer}"></td>
+                    <td class="reportrowsmall td-money" th:text="${totalPurchasesByBuyer}"></td>
                   </tr>
                    <tr>
                     <td class="reportrowsmall"></td>
                     <td class="reportrowsmall"></td>
                     <td class="reportrowsmall"></td>
                     <td class="reportrowsmall">Total fees</td>
-                    <td class="reportrowsmall" th:text="${totalBuyerFees}"></td>
+                    <td class="reportrowsmall td-money" th:text="${totalBuyerFees}"></td>
                   </tr>
                    <tr>
                     <td class="reportrow"></td>
                     <td class="reportrow"></td>
                     <td class="reportrow"></td>
                     <td class="reportrowbold">Total cost</td>
-                    <td class="reportrowbold" th:text="${totalCost}"></td>
+                    <td class="reportrowbold td-money" th:text="${totalCost}"></td>
                   </tr>
                   
                     

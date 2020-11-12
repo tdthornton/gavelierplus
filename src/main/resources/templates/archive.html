@@ -227,14 +227,66 @@
 
           <div class="card shadow mb-4 fontblack">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary" th:text="'All lots for ' + ${currentAuction.inputCompanyName + ' - ' + #dates.format(currentAuction.date, 'dd-MMM-yyyy')}"></h6>
+              <h6 class="m-0 font-weight-bold text-primary" th:text="${currentAuction.inputCompanyName + ' - ' + #dates.format(currentAuction.date, 'dd-MMM-yyyy') + ': Auction fees'}"></h6>
             </div>
             <div class="card-body">
               <div class="table-responsive fontblack">
                 <table class="table table-bordered fontblack" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
-                      <th>Lot Number</th>
+                      <th></th>
+                      <th>To Buyer</th>
+                      <th>To Seller</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    
+
+                    <tr>
+                      
+                      <td>Fixed value fee for lots under £10</td>
+                      <td th:text="${currentAuction.inputBuyerFeeMinimum}"></td>
+                      <td th:text="${currentAuction.inputSellerFeeMinimum}"></td>
+                      
+                      
+                    </tr>
+
+                    <tr>
+                      
+                      <td>Percentage fee for lots over £10</td>
+                      <td th:text="${currentAuction.inputBuyerFeePercentage}"></td>
+                      <td th:text="${currentAuction.inputSellerFeePercentage}"></td>
+                      
+                      
+                    </tr>
+
+                    <tr>
+                      
+                      <td>Fixed additional fee</td>
+                      <td th:text="${currentAuction.inputBuyerFeeFixed}"></td>
+                      <td th:text="${currentAuction.inputSellerFeeFixed}"></td>
+                      
+                      
+                    </tr>
+
+
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow mb-4 fontblack">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary" th:text="${currentAuction.inputCompanyName + ' - ' + #dates.format(currentAuction.date, 'dd-MMM-yyyy') + ': '  + #lists.size(allLots) + ' lot(s)'}"></h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive fontblack">
+                <table class="table table-bordered fontblack" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
                       <th>Lot Description</th>
                       <th>Seller Number</th>
                       <th>Estimate</th>
@@ -255,9 +307,9 @@
                         <td th:text="${lot.estimate}"></td>
                         <td th:text="${lot.reserve}"></td>
                         <td th:text="${lot.buyerNumber}"></td>
-                        <td th:text="${lot.salePrice}"></td>
-                        <td th:text="${lot.sellerFees}"></td>
-                        <td th:text="${lot.buyerFees}"></td>
+                        <td class="td-money" th:text="${lot.salePrice}"></td>
+                        <td class="td-money" th:text="${lot.sellerFees}"></td>
+                        <td class="td-money" th:text="${lot.buyerFees}"></td>
                         
                       </tr>
 
@@ -265,17 +317,101 @@
 
                     <tr>
                       
-                      <td>Total</td>
                       <td></td>
                       <td></td>
                       <td></td>
                       <td></td>
                       <td></td>
-                      <td></td>
-                      <td th:text="${totalSellerFees}"></td>
-                      <td th:text="${totalBuyerFees}"></td>
+                      <td class="td-money">Subtotals</td>
+                      <td class="td-money" th:text="${'£' + totalSalePrices}"></td>
+                      <td class="td-money" th:text="${'£' + totalSellerFees}"></td>
+                      <td class="td-money" th:text="${'£' + totalBuyerFees}"></td>
                       
                     </tr>
+
+                    <tr>
+                      
+                      <td></td>
+                      <td class="td-money" th:text="'Total fees taken this auction: £' + ${totalBuyerFees + totalSellerFees}"></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      
+                    </tr>
+
+
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow mb-4 fontblack">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary" th:text="${currentAuction.inputCompanyName + ' - ' + #dates.format(currentAuction.date, 'dd-MMM-yyyy') + ': '  + #lists.size(allSellers) + ' seller(s)'}"></h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive fontblack">
+                <table class="table table-bordered fontblack" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>Contact Number</th>
+                      <th>Address</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <th:block th:each="seller : ${allSellers}">
+
+                      <tr>
+                        <td th:text="${seller.sellerNumber}"></td>
+                        <td th:text="${seller.sellerName}"></td>
+                        <td th:text="${seller.sellerContactNumber}"></td>
+                        <td th:text="${seller.sellerAddress}"></td>
+                      </tr>
+
+                    </th:block>
+
+
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="card shadow mb-4 fontblack">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary" th:text="${currentAuction.inputCompanyName + ' - ' + #dates.format(currentAuction.date, 'dd-MMM-yyyy') + ': '  + #lists.size(allBuyers) + ' buyer(s)'}"></h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive fontblack">
+                <table class="table table-bordered fontblack" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>Contact Number</th>
+                      <th>Address</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <th:block th:each="buyer : ${allBuyers}">
+
+                      <tr>
+                        <td th:text="${buyer.buyerNumber}"></td>
+                        <td th:text="${buyer.buyerName}"></td>
+                        <td th:text="${buyer.buyerContactNumber}"></td>
+                        <td th:text="${buyer.buyerAddress}"></td>
+                      </tr>
+
+                    </th:block>
 
 
 

@@ -36,8 +36,8 @@
 }
 
 .sheet-row {
-  font-size:24px;
-  height: 80px;
+  font-size:22px;
+  max-height: 80px;
 }
 
 .reportrowbold {
@@ -67,8 +67,16 @@
     font-size: 45px;
   }
 
+  td.td-money {
+    text-align: right;
+  }
+
   .fontblack {
     color:black;
+  }
+
+  .fontred {
+    color: lightcoral;
   }
 
   .invoicenumber {
