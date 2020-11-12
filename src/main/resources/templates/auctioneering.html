@@ -230,6 +230,7 @@
                                        <input type="hidden" th:name="${'lots[' + i + '].lotNumber'}" th:value="${lotsForCurrentAuction[i].lotNumber}" />
                                        <input type="hidden" th:name="${'lots[' + i + '].sellerNumber'}" th:value="${lotsForCurrentAuction[i].sellerNumber}" />
                                        <input type="hidden" th:name="${'lots[' + i + '].auctionId'}" th:value="${currentAuctionId}" />
+                                       <input type="hidden" th:name="${currentAuctionId}" th:value="${currentAuctionId}" />
                                     </tr>
                                  </th:block>
                                  

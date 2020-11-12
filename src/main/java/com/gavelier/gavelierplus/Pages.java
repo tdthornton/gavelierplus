@@ -101,6 +101,8 @@ public class Pages {
 
     }
 
+    
+
     @GetMapping("/lots")
     public String lots(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
 
@@ -513,11 +515,78 @@ public class Pages {
         String currentAuctionId = queryParameters.get("auctionId");
         model.addAttribute("currentAuctionId", currentAuctionId);
 
+        Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+        model.addAttribute("currentAuction", currentAuction);
+
         model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
 
         model.addAttribute("name", principal.getName());
 
         return "documents";
+
+    }
+
+    @GetMapping("/auctioneerssheet")
+    public String auctioneersSheet(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to auctioneer's sheet");
+
+        String currentAuctionId = queryParameters.get("auctionId");
+
+        if (currentAuctionId != null && currentAuctionId != "null") {
+            Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+            if (currentAuction != null && currentAuction.getUserId().equals(principal.getName())) {
+                LOGGER.info(currentAuction.getInputCompanyName());
+
+                List<Lot> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
+                        .sorted((lot1, lot2) -> Integer.compare(lot1.getLotNumber(), lot2.getLotNumber()))
+                        .collect(toList());
+
+                model.addAttribute("allLots", allLotsForAuction);
+            }
+
+            
+
+        }
+
+        
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("userId", principal.getName());
+
+        return "auctioneerssheet";
+
+    }
+
+    @GetMapping("/catalogue")
+    public String catalogue(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to catalogue");
+
+        String currentAuctionId = queryParameters.get("auctionId");
+
+        if (currentAuctionId != null && currentAuctionId != "null") {
+            Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+            if (currentAuction != null && currentAuction.getUserId().equals(principal.getName())) {
+                LOGGER.info(currentAuction.getInputCompanyName());
+
+                List<Lot> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
+                        .sorted((lot1, lot2) -> Integer.compare(lot1.getLotNumber(), lot2.getLotNumber()))
+                        .collect(toList());
+
+                model.addAttribute("allLots", allLotsForAuction);
+            }
+
+            
+
+        }
+
+        
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("userId", principal.getName());
+
+        return "catalogue";
 
     }
 
@@ -588,10 +657,6 @@ public class Pages {
                     }
                 }
 
-                subListOfLots = applySellerFees(subListOfLots, auction);
-
-                
-
                 model.addAttribute("lotsForSeller", subListOfLots);
                 model.addAttribute("totalSalesForSeller", calculateTotalSoldBySeller(subListOfLots));
                 model.addAttribute("totalSellerFees", calculateTotalSellerFees(subListOfLots));
@@ -617,7 +682,9 @@ public class Pages {
         totalSoldBySeller.setScale(2, RoundingMode.HALF_UP);
 
         for (Lot lot: subListOfLots) {
-            totalSoldBySeller = totalSoldBySeller.add(lot.getSalePrice()).setScale(2, RoundingMode.HALF_UP);
+            if (lot.getSalePrice() != null) {
+                totalSoldBySeller = totalSoldBySeller.add(lot.getSalePrice()).setScale(2, RoundingMode.HALF_UP);
+            }
         }
 
         return totalSoldBySeller;
@@ -628,10 +695,13 @@ public class Pages {
         totalSellerFees.setScale(2, RoundingMode.HALF_UP);
 
         for (Lot lot: subListOfLots) {
-            totalSellerFees = totalSellerFees.add(lot.getSellerFees()).setScale(2, RoundingMode.HALF_UP);
+            if (lot.getSellerFees()!=null) {
+                totalSellerFees = totalSellerFees.add(lot.getSellerFees());
+                lot.setSellerFees(lot.getSellerFees().setScale(2, RoundingMode.HALF_UP));
+            }
         }
 
-        return totalSellerFees;
+        return totalSellerFees.setScale(2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal calculateFinalPaymentToSeller(List<Lot> subListOfLots) {
@@ -639,56 +709,16 @@ public class Pages {
         finalPaymentToSeller.setScale(2, RoundingMode.HALF_UP);
 
         for (Lot lot: subListOfLots) {
-            finalPaymentToSeller = finalPaymentToSeller.add(lot.getPaymentToSeller()).setScale(2, RoundingMode.HALF_UP);
+            if (lot.getPaymentToSeller() != null) {
+                finalPaymentToSeller = finalPaymentToSeller.add(lot.getPaymentToSeller());
+                lot.setPaymentToSeller(lot.getPaymentToSeller().setScale(2, RoundingMode.HALF_UP));
+            }
         }
 
-        return finalPaymentToSeller;
+        return finalPaymentToSeller.setScale(2, RoundingMode.HALF_UP);
     }
 
-    private List<Lot> applySellerFees(List<Lot> subListOfLots, Auction auction) {
-        for (Lot lot : subListOfLots) {
-
-            BigDecimal finalPaymentToSeller;
-
-            
-
-            BigDecimal minimumFee = new BigDecimal("0.00");
-            BigDecimal totalFees = new BigDecimal("0.00");
-
-            if (auction.getInputSellerFeeMinimum() != null) {
-                minimumFee = auction.getInputSellerFeeMinimum().setScale(2, RoundingMode.HALF_UP);
-            }
-
-            if (auction.getInputSellerFeeFixed() != null ) {
-                totalFees = totalFees.add(auction.getInputSellerFeeFixed());
-            }
-
-            if (lot.getSalePrice() != null) {
-
-                finalPaymentToSeller = lot.getSalePrice().setScale(2, RoundingMode.HALF_UP);
-
-                BigDecimal percentageFee = lot.getSalePrice()
-                        .multiply(new BigDecimal("0." + auction.getInputSellerFeePercentage())).setScale(2, RoundingMode.HALF_UP);
-
-                if (percentageFee.compareTo(minimumFee) > 0) {
-                    totalFees = totalFees.add(percentageFee);
-                } else {
-                    totalFees = totalFees.add(minimumFee);
-                }
-
-            } else {
-
-                finalPaymentToSeller = new BigDecimal("0.00").setScale(2, RoundingMode.HALF_UP);
-            }
-
-            lot.setSellerFees(totalFees);
-
-            lot.setPaymentToSeller(finalPaymentToSeller.subtract(totalFees));
-
-        }
-
-        return subListOfLots;
-    }
+    
 
     @GetMapping("/buyerreport")
     public String buyerReport(Principal principal, Model model, @RequestParam Map<String, String> queryParameters)
@@ -757,8 +787,6 @@ public class Pages {
                     }
                 }
 
-                subListOfLots = applyBuyerFees(subListOfLots, auction);
-
                 BigDecimal totalPurchasesByBuyer = calculateTotalPurchases(subListOfLots);
 
                 model.addAttribute("lotsForBuyer", subListOfLots);
@@ -786,10 +814,10 @@ public class Pages {
         totalPurchases.setScale(2, RoundingMode.HALF_UP);
         
         for (Lot lot: subListOfLots) {
-            totalPurchases = totalPurchases.add(lot.getSalePrice()).setScale(2, RoundingMode.HALF_UP);
+            totalPurchases = totalPurchases.add(lot.getSalePrice());
         }
 
-        return totalPurchases;
+        return totalPurchases.setScale(2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal calculateTotalBuyerFees(List<Lot> subListOfLots) {
@@ -797,10 +825,13 @@ public class Pages {
         totalBuyerFees.setScale(2, RoundingMode.HALF_UP);
 
         for (Lot lot: subListOfLots) {
-            totalBuyerFees = totalBuyerFees.add(lot.getBuyerFees()).setScale(2, RoundingMode.HALF_UP);
+            if (lot.getBuyerFees()!=null) {
+                totalBuyerFees = totalBuyerFees.add(lot.getBuyerFees()).setScale(2, RoundingMode.HALF_UP);
+                lot.setBuyerFees(lot.getBuyerFees().setScale(2, RoundingMode.HALF_UP));
+            }
         }
 
-        return totalBuyerFees;
+        return totalBuyerFees.setScale(2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal calculateTotalCost(List<Lot> subListOfLots) {
@@ -809,65 +840,61 @@ public class Pages {
 
         for (Lot lot: subListOfLots) {
             totalCost = totalCost.add(lot.getCostToBuyer()).setScale(2, RoundingMode.HALF_UP);
+            lot.setCostToBuyer(lot.getCostToBuyer().setScale(2, RoundingMode.HALF_UP));
         }
 
-        return totalCost;
+        return totalCost.setScale(2, RoundingMode.HALF_UP);
     }
 
-    private List<Lot> applyBuyerFees(List<Lot> subListOfLots, Auction auction) {
-        
-        for (Lot lot : subListOfLots) {
-
-            BigDecimal totalBuyerFees = new BigDecimal("0.00");
-
-            BigDecimal feeUnderTen = new BigDecimal("0.00");
-
-            if (auction.getInputBuyerFeeMinimum() != null) {
-                feeUnderTen = auction.getInputBuyerFeeMinimum().setScale(2, RoundingMode.HALF_UP);
-            }
-
-            BigDecimal fixedAdditionalFee = new BigDecimal("0.00");
-
-            if (auction.getInputBuyerFeeFixed() != null) {
-                fixedAdditionalFee = auction.getInputBuyerFeeFixed().setScale(2, RoundingMode.HALF_UP);
-            } else {
-                fixedAdditionalFee = new BigDecimal("0.00").setScale(2, RoundingMode.HALF_UP);
-            }
-
-            totalBuyerFees = totalBuyerFees.add(fixedAdditionalFee);
-
-            if (lot.getSalePrice() != null) {
-
-                BigDecimal percentageFee = lot.getSalePrice()
-                        .multiply(new BigDecimal("0." + auction.getInputBuyerFeePercentage())).setScale(2, RoundingMode.HALF_UP);
-
-                if (lot.getSalePrice().compareTo(new BigDecimal("10.00")) > 0) {
-                    totalBuyerFees = totalBuyerFees.add(percentageFee);
-                } else {
-                    totalBuyerFees = totalBuyerFees.add(feeUnderTen);
-                }
-
-                lot.setCostToBuyer(lot.getSalePrice().add(totalBuyerFees));
-
-            }
-
-            
-
-            lot.setBuyerFees(totalBuyerFees);
-
-        }
-
-        return subListOfLots;
-    }
+    
 
     @GetMapping("/archive")
     public String archive(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
 
-        LOGGER.info("Access to archive page");
-        String currentAuctionId = queryParameters.get("auctionId");
-        model.addAttribute("currentAuctionId", currentAuctionId);
+        LOGGER.info("Access to auctioneer's sheet");
 
+        String currentAuctionId = queryParameters.get("auctionId");
+
+        model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+
+        if (currentAuctionId != null && currentAuctionId != "null") {
+            Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+            if (currentAuction != null && currentAuction.getUserId().equals(principal.getName())) {
+                LOGGER.info(currentAuction.getInputCompanyName() + " archive accessed.");
+
+                model.addAttribute("currentAuction", currentAuction);
+
+                List<Lot> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
+                        .sorted((lot1, lot2) -> Integer.compare(lot1.getLotNumber(), lot2.getLotNumber()))
+                        .collect(toList());
+
+                for (Lot lot: allLotsForAuction) {
+                    if (lot.getSalePrice() != null) {
+                        lot.setSalePrice(lot.getSalePrice().setScale(2, RoundingMode.HALF_UP));
+                    }
+                }
+
+                model.addAttribute("allLots", allLotsForAuction);
+
+
+                BigDecimal totalSellerFees = calculateTotalSellerFees(allLotsForAuction);
+                BigDecimal totalBuyerFees = calculateTotalBuyerFees(allLotsForAuction);
+
+
+                model.addAttribute("totalRevenue", totalSellerFees.add(totalBuyerFees).setScale(2, RoundingMode.HALF_UP));
+                model.addAttribute("totalSellerFees", totalSellerFees.setScale(2, RoundingMode.HALF_UP));
+                model.addAttribute("totalBuyerFees", totalBuyerFees.setScale(2, RoundingMode.HALF_UP));
+            }
+
+            
+
+        }
+
+        
         model.addAttribute("name", principal.getName());
+        model.addAttribute("userId", principal.getName());
+        model.addAttribute("currentAuctionId", currentAuctionId);
 
         return "archive";
 
