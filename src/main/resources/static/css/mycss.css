@@ -35,6 +35,11 @@
     font-size:24px;
 }
 
+.sheet-row {
+  font-size:24px;
+  height: 80px;
+}
+
 .reportrowbold {
   font-size:24px;
   font-weight: bold;

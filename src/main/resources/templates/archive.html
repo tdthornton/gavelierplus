@@ -132,18 +132,29 @@
 
           <!-- Topbar dropdown -->
           <div class="dropdown w-100">
-            <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Auctions
+            <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Switch Auction
             </button>
+
+
             <div class="dropdown-menu text-center" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 21st October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 14th October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 7th October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 21st October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 14th October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 7th October, 2019</a>
+
+              <th:block th:each="auction : ${allAuctionsForUser}">
+
+
+
+                <a class="dropdown-item" th:href="@{/archive(auctionId=${auction.id})}"
+                  th:text="${auction.inputCompanyName + ' - ' + #dates.format(auction.date, 'dd-MMM-yyyy')}"></a>
+
+              </th:block>
             </div>
+
+
+
+
           </div>
+
 
           <!-- Topbar Navbar -->
           <ul class="navbar-nav ml-auto">
@@ -209,13 +220,70 @@
         <!-- End of Topbar -->
 
         <!-- Begin Page Content -->
-        <div class="container-fluid">
+        <div class="container-fluid"  id="section-to-print">
 
           <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800" th:text="'Archive for ' + ${currentAuctionName}"></h1>
+          <h1 class="h3 mb-4 text-gray-800" th:text="'Archive for ' + ${currentAuction.inputCompanyName + ' - ' + #dates.format(currentAuction.date, 'dd-MMM-yyyy')}"></h1>
+
+          <div class="card shadow mb-4 fontblack">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary" th:text="'All lots for ' + ${currentAuction.inputCompanyName + ' - ' + #dates.format(currentAuction.date, 'dd-MMM-yyyy')}"></h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive fontblack">
+                <table class="table table-bordered fontblack" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>Lot Number</th>
+                      <th>Lot Description</th>
+                      <th>Seller Number</th>
+                      <th>Estimate</th>
+                      <th>Reserve</th>
+                      <th>Buyer Number</th>
+                      <th>Sale Price</th>
+                      <th>Seller Fees</th>
+                      <th>Buyer Fees</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <th:block th:each="lot : ${allLots}">
+
+                      <tr>
+                        <td th:text="${lot.lotNumber}"></td>
+                        <td th:text="${lot.desc}"></td>
+                        <td th:text="${lot.sellerNumber}"></td>
+                        <td th:text="${lot.estimate}"></td>
+                        <td th:text="${lot.reserve}"></td>
+                        <td th:text="${lot.buyerNumber}"></td>
+                        <td th:text="${lot.salePrice}"></td>
+                        <td th:text="${lot.sellerFees}"></td>
+                        <td th:text="${lot.buyerFees}"></td>
+                        
+                      </tr>
+
+                    </th:block>
+
+                    <tr>
+                      
+                      <td>Total</td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td th:text="${totalSellerFees}"></td>
+                      <td th:text="${totalBuyerFees}"></td>
+                      
+                    </tr>
 
 
-          <p class="aclass" th:text="'asdfadf'" />
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
 
         </div>
         <!-- /.container-fluid -->
