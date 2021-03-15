@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Login - Gavelier Plus</title>
+  <title>Dashboard - Gavelier Plus</title>
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -21,42 +21,32 @@
 
 </head>
 
-<body class="bg-gradient-primary">
+<body id="page-top">
 
-  <div class="container">
+  <table class="table table-sm" id="section-to-print">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Description</th>
+        <th scope="col">Estimate</th>
+        <th scope="col">Reserve</th>
+      </tr>
+    </thead>
+    <tbody>
+      <th:block th:each="lot : ${allLots}">
 
-    <!-- Outer Row -->
-    <div class="row justify-content-center">
+        <tr class="fontblack">
+          <td th:text="${lot.lotNumber}"></td>
+          <td th:text="${lot.desc}"></td>
+          <td th:if="${lot.estimate != null}" th:text="${'£' + lot.estimate}">£</td>
+          <td th:if="${lot.estimate == null}">-</td>
+          <td th:if="${lot.reserve != null}" th:text="${'£' + lot.reserve}">£</td>
+          <td th:if="${lot.reserve == null}">-</td>
+        </tr>
 
-      <div class="col-xl-10 col-lg-12 col-md-9">
-
-        <div class="card o-hidden border-0 shadow-lg my-5">
-          <div class="card-body p-0">
-            <!-- Nested Row within Card Body -->
-            <div class="row">
-              <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
-              <div class="col-lg-6">
-                <div class="p-5">
-                  <div class="text-center">
-                    <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
-                  </div>
-                    <hr>
-                    <a href="/dashboard" class="btn btn-google btn-user btn-block">
-                      <i class="fab fa-google fa-fw"></i> Login with Google
-                    </a>
-                  </form>
-                  <hr>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
+      </th:block>
+    </tbody>
+  </table>
 
   <!-- Bootstrap core JavaScript-->
   <script src="vendor/jquery/jquery.min.js"></script>

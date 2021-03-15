@@ -1,9 +1,13 @@
 package com.gavelier.gavelierplus;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.validation.Valid;
@@ -11,6 +15,7 @@ import javax.validation.Valid;
 import com.gavelier.gavelierplus.domain.Auction;
 import com.gavelier.gavelierplus.domain.Buyer;
 import com.gavelier.gavelierplus.domain.Lot;
+import com.gavelier.gavelierplus.domain.LotListWrapper;
 import com.gavelier.gavelierplus.domain.Seller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +24,15 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class Endpoints {
 
     @Autowired
     DynamoDBService dynamoDBService;
+
+    EndpointUtils endpointUtils;
 
     private final static Logger LOGGER = Logger.getLogger(Endpoints.class.getName());
 
@@ -51,23 +59,20 @@ public class Endpoints {
 
         if (bindingResult.hasErrors()) {
             LOGGER.info("Entered error branch in /createlot");
-           
+
             StringBuilder errors = new StringBuilder();
 
-            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+            bindingResult.getFieldErrors()
+                    .forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
 
-
-			return "redirect:/lots?auctionId=" + lot.getAuctionId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
-		}
-
-
-        LOGGER.info("lot =  " + lot.toString());
+            return "redirect:/lots?auctionId=" + lot.getAuctionId() + "&error="
+                    + URLEncoder.encode(errors.toString(), "UTF-8");
+        }
 
         dynamoDBService.createLot(lot);
-        
 
         return "redirect:/lots?auctionId=" + lot.getAuctionId();
-        
+
     }
 
     @PostMapping(value = "/createseller", produces = "application/html")
@@ -78,23 +83,22 @@ public class Endpoints {
 
         if (bindingResult.hasErrors()) {
             LOGGER.info("Entered error branch in /createseller");
-           
+
             StringBuilder errors = new StringBuilder();
 
-            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+            bindingResult.getFieldErrors()
+                    .forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
 
-
-			return "redirect:/sellers?auctionId=" + seller.getAuctionId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
-		}
-
+            return "redirect:/sellers?auctionId=" + seller.getAuctionId() + "&error="
+                    + URLEncoder.encode(errors.toString(), "UTF-8");
+        }
 
         LOGGER.info("seller =  " + seller.toString());
 
         dynamoDBService.createSeller(seller);
-        
 
         return "redirect:/sellers?auctionId=" + seller.getAuctionId();
-        
+
     }
 
     @PostMapping(value = "/createbuyer", produces = "application/html")
@@ -105,23 +109,22 @@ public class Endpoints {
 
         if (bindingResult.hasErrors()) {
             LOGGER.info("Entered error branch in /createseller");
-           
+
             StringBuilder errors = new StringBuilder();
 
-            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+            bindingResult.getFieldErrors()
+                    .forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
 
-
-			return "redirect:/buyers?auctionId=" + buyer.getAuctionId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
-		}
-
+            return "redirect:/buyers?auctionId=" + buyer.getAuctionId() + "&error="
+                    + URLEncoder.encode(errors.toString(), "UTF-8");
+        }
 
         LOGGER.info("buyer =  " + buyer.toString());
 
         dynamoDBService.createBuyer(buyer);
-        
 
         return "redirect:/buyers?auctionId=" + buyer.getAuctionId();
-        
+
     }
 
     @PostMapping(value = "/updatelot", produces = "application/html")
@@ -132,23 +135,21 @@ public class Endpoints {
 
         if (bindingResult.hasErrors()) {
             LOGGER.info("Entered error branch in /updatelot");
-           
+
             StringBuilder errors = new StringBuilder();
 
-            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+            bindingResult.getFieldErrors()
+                    .forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
 
-
-			return "redirect:/editlot?lotId=" + lot.getId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
-		}
-
+            return "redirect:/editlot?lotId=" + lot.getId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
+        }
 
         LOGGER.info("updated lot =  " + lot.toString());
 
         dynamoDBService.updateLot(lot);
-        
 
         return "redirect:/lots?auctionId=" + lot.getAuctionId();
-        
+
     }
 
     @PostMapping(value = "/updateseller", produces = "application/html")
@@ -159,23 +160,22 @@ public class Endpoints {
 
         if (bindingResult.hasErrors()) {
             LOGGER.info("Entered error branch in /updateseller");
-           
+
             StringBuilder errors = new StringBuilder();
 
-            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+            bindingResult.getFieldErrors()
+                    .forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
 
-
-			return "redirect:/editseller?sellerId=" + seller.getId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
-		}
-
+            return "redirect:/editseller?sellerId=" + seller.getId() + "&error="
+                    + URLEncoder.encode(errors.toString(), "UTF-8");
+        }
 
         LOGGER.info("updated seller =  " + seller.toString());
 
         dynamoDBService.updateSeller(seller);
-        
 
         return "redirect:/sellers?auctionId=" + seller.getAuctionId();
-        
+
     }
 
     @PostMapping(value = "/updatebuyer", produces = "application/html")
@@ -186,23 +186,22 @@ public class Endpoints {
 
         if (bindingResult.hasErrors()) {
             LOGGER.info("Entered error branch in /updatebuyer");
-           
+
             StringBuilder errors = new StringBuilder();
 
-            bindingResult.getFieldErrors().forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
+            bindingResult.getFieldErrors()
+                    .forEach(error -> errors.append(error.getField() + ": " + error.getDefaultMessage() + ". "));
 
-
-			return "redirect:/editbuyer?buyerId=" + buyer.getId() + "&error=" + URLEncoder.encode(errors.toString(), "UTF-8");
-		}
-
+            return "redirect:/editbuyer?buyerId=" + buyer.getId() + "&error="
+                    + URLEncoder.encode(errors.toString(), "UTF-8");
+        }
 
         LOGGER.info("updated buyer =  " + buyer.toString());
 
         dynamoDBService.updateBuyer(buyer);
-        
 
         return "redirect:/buyers?auctionId=" + buyer.getAuctionId();
-        
+
     }
 
     @PostMapping(value = "/deletelot")
@@ -211,9 +210,9 @@ public class Endpoints {
         LOGGER.info("called delete lot for lot " + lot);
 
         dynamoDBService.deleteLot(lot);
-        
+
         return "redirect:/lots?auctionId=" + lot.getAuctionId();
-        
+
     }
 
     @PostMapping(value = "/deleteseller")
@@ -222,9 +221,9 @@ public class Endpoints {
         LOGGER.info("called delete seller for seller " + seller);
 
         dynamoDBService.deleteSeller(seller);
-        
+
         return "redirect:/sellers?auctionId=" + seller.getAuctionId();
-        
+
     }
 
     @PostMapping(value = "/deletebuyer")
@@ -233,9 +232,50 @@ public class Endpoints {
         LOGGER.info("called delete buyer for buyer " + buyer);
 
         dynamoDBService.deleteBuyer(buyer);
-        
+
         return "redirect:/buyers?auctionId=" + buyer.getAuctionId();
-        
+
+    }
+
+    @PostMapping(value = "/recordsalesmultiple", produces = "application/html")
+    public String recordSales(LotListWrapper lotListWrapper, BindingResult bindingResult, Model model,
+            Principal principal, @RequestParam Map<String, String> queryParameters)
+            throws UnsupportedEncodingException {
+
+        endpointUtils = new EndpointUtils();
+
+        String page = queryParameters.get("page");
+
+        String currentAuctionId = lotListWrapper.getLots().get(0).getAuctionId();
+
+        Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+        List<Integer> errors = new ArrayList<Integer>();
+
+        for (Lot lot : lotListWrapper.getLots()) {
+            lot = endpointUtils.applySellerFees(lot, currentAuction);
+            if (lot.getBuyerNumber() > 0) {
+                if (endpointUtils.isValidSale(lot)) {
+                    lot = endpointUtils.applyBuyerFees(lot, currentAuction);
+                    dynamoDBService.updateLotSaleOnly(lot);
+                } else {
+                    errors.add(lot.getLotNumber());
+                }
+            } else {
+                lot.setSalePrice(new BigDecimal("0.00").setScale(2));
+                dynamoDBService.updateLotSaleOnly(lot);
+            }
+        }
+
+        LOGGER.info(errors.toString());
+
+        if (errors.size() > 0) {
+            return "redirect:/auctioneering?auctionId=" + lotListWrapper.getLots().get(0).getAuctionId() + "&page="
+                    + page + "&error=" + URLEncoder.encode("Lots not saved: " + errors.toString(), "UTF-8");
+        } else {
+            return "redirect:/auctioneering?auctionId=" + lotListWrapper.getLots().get(0).getAuctionId() + "&page="
+                    + page;
+        }
     }
 
 

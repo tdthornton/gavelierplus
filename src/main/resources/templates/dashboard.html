@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin 2 - Blank</title>
+  <title>Dashboard - Gavelier Plus</title>
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -130,20 +130,32 @@
             <i class="fa fa-bars"></i>
           </button>
 
-          <!-- Topbar dropdown -->
+
           <div class="dropdown w-100">
-            <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Switch Auction
+            <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Switch Auction To See Lots
             </button>
+
+
             <div class="dropdown-menu text-center" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 21st October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 14th October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 7th October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 21st October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 14th October, 2019</a>
-              <a class="dropdown-item" href="#">Isle of Wight Auctions - Wednesday 7th October, 2019</a>
+
+              <th:block th:each="auction : ${allAuctionsForUser}">
+
+
+
+                <a class="dropdown-item" th:href="@{/lots(auctionId=${auction.id})}"
+                  th:text="${auction.inputCompanyName + ' - ' + #dates.format(auction.date, 'dd-MMM-yyyy')}"></a>
+
+              </th:block>
             </div>
+
+
+
+
           </div>
+
+          
 
           <!-- Topbar Navbar -->
           <ul class="navbar-nav ml-auto">
@@ -212,10 +224,10 @@
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800" th:text="'Dashboard for ' + ${currentAuctionName}"></h1>
+          <h1 class="h3 mb-4 text-gray-800" th:text="'Welcome back to Gavelier Plus'"></h1>
 
 
-          adf
+          
 
         </div>
         <!-- /.container-fluid -->

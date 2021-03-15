@@ -63,7 +63,7 @@ public class CreateLotTest extends BaseControllerTest {
                 // post a basic form submission to /createlot with a valid lot, and see that the
                 // successful redirect is performed without errors
 
-                Lot lot = new Lot("auctionId_192328j", 1, 2, "A mixed box of interesting items.", "20", "",
+                Lot lot = new Lot("auctionId_192328j", 1, 2, "A mixed box of interesting items.", "20", "", 0,
                                 new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
 
                 MvcResult result = mockMvc
@@ -87,7 +87,7 @@ public class CreateLotTest extends BaseControllerTest {
 
                 // post a lot with a missing auctionId and check that it's rejected.
 
-                Lot lot = new Lot("auctionId_192328j", 0, 2, "A mixed box of interesting items.", "£20", "", new BigDecimal("0.00"),
+                Lot lot = new Lot("auctionId_192328j", 0, 2, "A mixed box of interesting items.", "£20", "", 0, new BigDecimal("0.00"),
                                 new BigDecimal("0.00"), new BigDecimal("0.00"));
 
                 MvcResult result = mockMvc
@@ -113,7 +113,7 @@ public class CreateLotTest extends BaseControllerTest {
 
                 // post a lot with a missing auctionId and check that it's rejected.
 
-                Lot lot = new Lot("auctionId_192328j", 1, 2, "", "£20", "", new BigDecimal("0.00"),
+                Lot lot = new Lot("auctionId_192328j", 1, 2, "", "£20", "", 0, new BigDecimal("0.00"),
                                 new BigDecimal("0.00"), new BigDecimal("0.00"));
 
                 MvcResult result = mockMvc
@@ -140,7 +140,7 @@ public class CreateLotTest extends BaseControllerTest {
 
                 // post a lot with a missing auctionId and check that it's rejected.
 
-                Lot lot = new Lot("auctionId_192328j", 1, 2, null, "£20", "", new BigDecimal("0.00"),
+                Lot lot = new Lot("auctionId_192328j", 1, 2, null, "£20", "", 0, new BigDecimal("0.00"),
                                 new BigDecimal("0.00"), new BigDecimal("0.00"));
 
                 MvcResult result = mockMvc
@@ -183,7 +183,7 @@ public class CreateLotTest extends BaseControllerTest {
                 // successful redirect is performed without errors
                 // changes the lot description, posts it to /updatelot, and checks that the db service was called with the new lot
 
-                Lot lot = new Lot("auctionId_192328j", 1, 2, "A mixed box of interesting items.", "20", "",
+                Lot lot = new Lot("auctionId_192328j", 1, 2, "A mixed box of interesting items.", "20", "", 0,
                                 new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
 
                 MvcResult result = mockMvc

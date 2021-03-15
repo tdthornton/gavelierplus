@@ -35,11 +35,13 @@ import org.springframework.test.web.servlet.MvcResult;
 @AutoConfigureMockMvc
 @SpringBootTest
 @ActiveProfiles({ "default", "local", "test" })
-abstract class BaseDeleteLotControllerTest {
+abstract class BaseUpdateLotControllerTest {
 }
 
 @RunWith(SpringRunner.class)
-public class DeleteLotTest extends BaseDeleteLotControllerTest {
+public class UpdateLotTest extends BaseDeleteLotControllerTest {
+
+
         @Autowired
         private MockMvc mockMvc;
 
@@ -52,25 +54,27 @@ public class DeleteLotTest extends BaseDeleteLotControllerTest {
 
         @Test
         @WithMockUser
-        public void testBasicDeleteLot() throws Exception {
+        public void testBasicUpdateLot() throws Exception {
 
-                // post a basic form submission to /deletelot with a valid lot, and see that the
+                // post a basic form submission to /updatelot with a valid lot, and see that the
                 // successful redirect is performed without errors
-                // and the db service is called to delete the lot by the endpoint
+                // and the db service is called to update the lot by the endpoint
 
 
                 Lot lot = new Lot("auctionId_8217833p", 1, 2, "A mixed box of interesting items.", "20", "", 0,
-                                new BigDecimal("0.00"), new BigDecimal("0.00"), new BigDecimal("0.00"));
+                                new BigDecimal("1.00"), new BigDecimal(".00"), new BigDecimal("0.00"));
 
                 MvcResult result = mockMvc
-                                .perform(post("/deletelot").content(utilGetFormParamsForLot(lot)).with(csrf())
+                                .perform(post("/updatelot").content(utilGetFormParamsForLot(lot)).with(csrf())
                                                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                                                 .andExpect(status().isFound())
                                                 .andReturn();
 
                 String redirectUrl = result.getResponse().getRedirectedUrl();
 
-                verify(mockService, times(1)).deleteLot(lot); //DynamoDB was called once to add our lot
+                verify(mockService, times(1)).updateLot(lot); //DynamoDB was called once update our lot
+                // verify(mockService, times(0)).deleteLot(lot); //DynamoDB was not called to delete our lot
+
 
                 Assert.assertTrue(redirectUrl.contains("/lots?auctionId=" + lot.getAuctionId())); //we are redirected to the right place
                 Assert.assertFalse(redirectUrl.contains("&error=")); //we are redirected without errors

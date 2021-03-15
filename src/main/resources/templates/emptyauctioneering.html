@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin 2 - Blank</title>
+  <title>Buyers - Gavelier</title>
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -82,14 +82,14 @@
       </li>
 
       <!-- Nav Item - Auctioneering -->
-      <li class="nav-item">
+      <li class="nav-item active">
         <a class="nav-link" th:href="@{'/auctioneering?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-gavel"></i>
           <span>Auctioneering</span></a>
       </li>
 
       <!-- Nav Item - Auctioneering -->
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" th:href="@{'/documents?auctionId=' + ${currentAuctionId}}">
           <i class="fas fa-fw fa-paperclip"></i>
           <span>Documents</span></a>
@@ -144,7 +144,7 @@
 
 
 
-                <a class="dropdown-item" th:href="@{/documents(auctionId=${auction.id})}"
+                <a class="dropdown-item" th:href="@{/auctioneering(auctionId=${auction.id})}"
                   th:text="${auction.inputCompanyName + ' - ' + #dates.format(auction.date, 'dd-MMM-yyyy')}"></a>
 
               </th:block>
@@ -160,14 +160,17 @@
 
             <!-- Nav Item - Search Dropdown (Visible Only XS) -->
             <li class="nav-item dropdown no-arrow d-sm-none">
-              <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-search fa-fw"></i>
               </a>
               <!-- Dropdown - Messages -->
-              <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
+              <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                aria-labelledby="searchDropdown">
                 <form class="form-inline mr-auto w-100 navbar-search">
                   <div class="input-group">
-                    <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                    <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                      aria-label="Search" aria-describedby="basic-addon2">
                     <div class="input-group-append">
                       <button class="btn btn-primary" type="button">
                         <i class="fas fa-search fa-sm"></i>
@@ -178,16 +181,17 @@
               </div>
             </li>
 
-            
+
 
             <!-- Nav Item - Messages -->
-            
+
 
             <div class="topbar-divider d-none d-sm-block"></div>
 
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">[[${name}]]</span>
                 <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
               </a>
@@ -221,14 +225,8 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
 
-          <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800" th:text="'Documents for ' + ${currentAuction.inputCompanyName + ' - ' + #dates.format(currentAuction.date, 'dd-MMM-yyyy')}"></h1>
+          <h1 class="h3 mb-4 text-gray-800">Select an auction from the menu to proceed with the auction.</h1>
 
-
-          <ul>
-            <li ><a th:href="@{'/auctioneerssheet?auctionId=' + ${currentAuctionId}}">Auctioneer's sheet</a></li>
-            <li ><a th:href="@{'/catalogue?auctionId=' + ${currentAuctionId}}">Catalogue</a></li>
-          </ul>
 
         </div>
         <!-- /.container-fluid -->

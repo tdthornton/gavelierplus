@@ -2,8 +2,13 @@ package com.gavelier.gavelierplus;
 
 import static java.util.stream.Collectors.toList;
 
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.net.URLEncoder;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -68,10 +73,11 @@ public class Pages {
 
         LOGGER.info("Access to dashboard page");
 
-        String currentAuctionId = queryParameters.get("auctionId");
-        model.addAttribute("currentAuctionId", currentAuctionId);
-
         model.addAttribute("name", principal.getName());
+
+        model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+
+        model.addAttribute("error", queryParameters.get("error"));
 
         return "dashboard";
 
@@ -93,6 +99,8 @@ public class Pages {
 
     }
 
+    
+
     @GetMapping("/lots")
     public String lots(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
 
@@ -109,8 +117,12 @@ public class Pages {
         if (currentAuctionId != null && currentAuctionId != "null") {
             Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
 
-            if (currentAuction != null) { // if the auction exists, we can accept new lots for it, and show the existing
-                                          // ones.
+            if (currentAuction != null && currentAuction.getUserId().equals(principal.getName())) { // if the auction
+                                                                                                    // exists, we can
+                                                                                                    // accept new lots
+                                                                                                    // for it, and show
+                                                                                                    // the existing
+                // ones.
 
                 // get all lots for this auction and sort the scan
                 List<Lot> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
@@ -133,8 +145,7 @@ public class Pages {
 
                 }
                 model.addAttribute("currentAuctionId", currentAuctionId);
-                model.addAttribute("currentAuctionName",
-                        currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
+                model.addAttribute("currentAuction", currentAuction);
                 model.addAttribute("lotsForCurrentAuction", allLotsForAuction);
 
                 return "lots";
@@ -237,7 +248,7 @@ public class Pages {
 
         Seller oldSellerState = dynamoDBService.getOneSeller(sellerId);
 
-        if (oldSellerState!=null && oldSellerState.getId()!=null) {
+        if (oldSellerState != null && oldSellerState.getId() != null) {
 
             model.addAttribute("oldSeller", oldSellerState);
             model.addAttribute("currentAuctionId", oldSellerState.getAuctionId());
@@ -248,8 +259,6 @@ public class Pages {
 
             return "redirect:/sellers";
         }
-
-        
 
     }
 
@@ -264,7 +273,7 @@ public class Pages {
 
         Buyer oldBuyerState = dynamoDBService.getOneBuyer(buyerId);
 
-        if (oldBuyerState!=null && oldBuyerState.getId()!=null) {
+        if (oldBuyerState != null && oldBuyerState.getId() != null) {
 
             model.addAttribute("oldBuyer", oldBuyerState);
             model.addAttribute("currentAuctionId", oldBuyerState.getAuctionId());
@@ -275,8 +284,6 @@ public class Pages {
 
             return "redirect:/buyers";
         }
-
-        
 
     }
 
@@ -296,8 +303,12 @@ public class Pages {
         if (currentAuctionId != null && currentAuctionId != "null") {
             Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
 
-            if (currentAuction != null) { // if the auction exists, we can accept new sellers for it, and show the
-                                          // existing ones.
+            if (currentAuction != null && principal.getName().equals(currentAuction.getUserId())) { // if the auction
+                                                                                                    // exists, we can
+                                                                                                    // accept new
+                                                                                                    // sellers for it,
+                                                                                                    // and show the
+                // existing ones.
 
                 // get all sellers for this auction and sort the scan
                 List<Seller> allSellers = dynamoDBService.getAllSellersForAuction(currentAuctionId);
@@ -318,8 +329,7 @@ public class Pages {
 
                 }
                 model.addAttribute("currentAuctionId", currentAuctionId);
-                model.addAttribute("currentAuctionName",
-                        currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
+                model.addAttribute("currentAuction", currentAuction);
                 model.addAttribute("sellersForCurrentAuction", allSellers);
 
                 return "sellers";
@@ -355,8 +365,12 @@ public class Pages {
         if (currentAuctionId != null && currentAuctionId != "null") {
             Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
 
-            if (currentAuction != null) { // if the auction exists, we can accept new buyers for it, and show the
-                                          // existing ones.
+            if (currentAuction != null && currentAuction.getUserId().equals(principal.getName())) { // if the auction
+                                                                                                    // exists, we can
+                                                                                                    // accept new buyers
+                                                                                                    // for it, and show
+                                                                                                    // the
+                // existing ones.
 
                 // get all buyers for this auction and sort the scan
                 List<Buyer> allBuyers = dynamoDBService.getAllBuyersForAuction(currentAuctionId);
@@ -377,8 +391,7 @@ public class Pages {
 
                 }
                 model.addAttribute("currentAuctionId", currentAuctionId);
-                model.addAttribute("currentAuctionName",
-                        currentAuction.getInputCompanyName() + " - " + currentAuction.getDate());
+                model.addAttribute("currentAuction", currentAuction);
                 model.addAttribute("buyersForCurrentAuction", allBuyers);
 
                 return "buyers";
@@ -404,11 +417,91 @@ public class Pages {
         LOGGER.info("Access to auctioneering page");
 
         String currentAuctionId = queryParameters.get("auctionId");
-        model.addAttribute("currentAuctionId", currentAuctionId);
 
-        model.addAttribute("name", principal.getName());
+        LOGGER.info("Called auctioneering page, auction ID = " + currentAuctionId);
 
-        return "auctioneering";
+        model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+
+        model.addAttribute("error", queryParameters.get("error"));
+
+        if (currentAuctionId != null && currentAuctionId != "null") {
+
+            Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+            if (currentAuction != null && currentAuction.getUserId().equals(principal.getName())) { // if the auction
+                                                                                                    // exists, we can
+                                                                                                    // sell the lots
+
+                // get all lots for this auction and sort the scan in ascending lot number order
+                List<Lot> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
+                        .sorted((lot1, lot2) -> Integer.compare(lot1.getLotNumber(), lot2.getLotNumber()))
+                        .collect(toList());
+
+                if (allLotsForAuction.size()!=0) {
+
+                String page = queryParameters.get("page");
+
+                int currentPage = 1;
+                int fromIndex = 0;
+                int toIndex = 10;
+
+                if (page != null) {
+                    try {
+                        currentPage = Integer.parseInt(page);
+                        fromIndex = (currentPage - 1) * 10;
+                        toIndex = fromIndex + 10;
+                    } catch (NumberFormatException e) {
+
+                    }
+                }
+
+                int totalPages = allLotsForAuction.size() / 10;
+                int pagesMod = allLotsForAuction.size() % 10;
+                if (pagesMod > 0) {
+                    totalPages++;
+                }
+
+                if (toIndex > allLotsForAuction.size()) {
+                    toIndex = allLotsForAuction.size();
+                }
+
+                List<Lot> lotsToPass = allLotsForAuction.subList(fromIndex, toIndex);
+
+                
+                model.addAttribute("totalPages", totalPages);
+                model.addAttribute("currentPage", currentPage);
+                model.addAttribute("lotsForCurrentAuction", lotsToPass);
+                model.addAttribute("lotsPassedCount", lotsToPass.size() - 1);
+
+            } else {
+                model.addAttribute("totalPages", 1);
+                model.addAttribute("currentPage", 1);
+                model.addAttribute("lotsPassedCount", 0);
+
+                model.addAttribute("name", principal.getName());
+
+                
+                
+            }
+
+                model.addAttribute("currentAuctionId", currentAuctionId);
+
+                model.addAttribute("currentAuction", currentAuction);
+
+                return "auctioneering";
+
+            } else {
+
+                // there is no valid auction provided
+                // so we show a page with no form, only the option to select an auction
+                return "emptyauctioneering";
+
+            }
+        } else {
+            // there is no valid auction provided
+            // so we show a page with no form, only the option to select an auction
+            return "emptyauctioneering";
+        }
 
     }
 
@@ -420,20 +513,418 @@ public class Pages {
         String currentAuctionId = queryParameters.get("auctionId");
         model.addAttribute("currentAuctionId", currentAuctionId);
 
+        model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+
+        if (currentAuctionId != null && currentAuctionId != "null"){ 
+
+            Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+            if (currentAuction != null) {
+                model.addAttribute("currentAuction", currentAuction);
+            } else {
+                return "emptydocuments";
+            }
+
+        } else {
+            return "emptydocuments";
+        }
+
+        
+    
+
         model.addAttribute("name", principal.getName());
 
         return "documents";
 
     }
 
+    @GetMapping("/auctioneerssheet")
+    public String auctioneersSheet(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to auctioneer's sheet");
+
+        String currentAuctionId = queryParameters.get("auctionId");
+
+        if (currentAuctionId != null && currentAuctionId != "null") {
+            Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+            if (currentAuction != null && currentAuction.getUserId().equals(principal.getName())) {
+                LOGGER.info(currentAuction.getInputCompanyName());
+
+                List<Lot> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
+                        .sorted((lot1, lot2) -> Integer.compare(lot1.getLotNumber(), lot2.getLotNumber()))
+                        .collect(toList());
+
+                model.addAttribute("allLots", allLotsForAuction);
+            }
+
+            
+
+        }
+
+        
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("userId", principal.getName());
+
+        return "auctioneerssheet";
+
+    }
+
+    @GetMapping("/catalogue")
+    public String catalogue(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
+
+        LOGGER.info("Access to catalogue");
+
+        String currentAuctionId = queryParameters.get("auctionId");
+
+        if (currentAuctionId != null && currentAuctionId != "null") {
+            Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+            if (currentAuction != null && currentAuction.getUserId().equals(principal.getName())) {
+                LOGGER.info(currentAuction.getInputCompanyName());
+
+                List<Lot> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
+                        .sorted((lot1, lot2) -> Integer.compare(lot1.getLotNumber(), lot2.getLotNumber()))
+                        .collect(toList());
+
+                model.addAttribute("allLots", allLotsForAuction);
+            }
+
+            
+
+        }
+
+        
+        model.addAttribute("name", principal.getName());
+        model.addAttribute("userId", principal.getName());
+
+        return "catalogue";
+
+    }
+
+    @GetMapping("/sellerreport")
+    public String sellerReport(Principal principal, Model model, @RequestParam Map<String, String> queryParameters)
+            throws UnsupportedEncodingException {
+
+        LOGGER.info("Access to seller report page");
+
+        String currentAuctionId = queryParameters.get("auctionId");
+        int sellerNumber = 0;
+
+        model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+
+        try {
+
+            if (queryParameters.containsKey("sellerNumber")) {
+                String sellerNumberString = queryParameters.get("sellerNumber");
+                sellerNumber = Integer.parseInt(sellerNumberString);
+            } else {
+                return "redirect:/sellers?auctionId=" + currentAuctionId + "&error="
+                        + URLEncoder.encode("Not able to find that seller in this auction.", "UTF-8");
+            }
+
+        } catch (NumberFormatException e) {
+            return "redirect:/sellers?auctionId=" + currentAuctionId + "&error="
+                    + URLEncoder.encode("Not able to find that seller in this auction.", "UTF-8");
+        }
+
+        if (sellerNumber != 0) {
+
+            model.addAttribute("currentAuctionId", currentAuctionId);
+
+            model.addAttribute("name", principal.getName());
+
+            Auction auction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+            if (auction != null && auction.getUserId().equals(principal.getName())) {
+
+                List<Seller> allSellers = dynamoDBService.getAllSellersForAuction(currentAuctionId);
+
+                boolean foundSeller = false;
+
+                for (Seller seller : allSellers) {
+                    if (seller.getSellerNumber() == sellerNumber) {
+                        model.addAttribute("seller", seller);
+                        foundSeller = true;
+                    }
+                }
+                
+                if (!foundSeller) {
+                    return "redirect:/sellers?auctionId=" + currentAuctionId + "&error="
+                            + URLEncoder.encode("Not able to find that seller in this auction.", "UTF-8");
+                }
+
+                List<Lot> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
+                        .sorted((lot1, lot2) -> Integer.compare(lot1.getLotNumber(), lot2.getLotNumber()))
+                        .collect(toList());
+
+                List<Lot> subListOfLots = new ArrayList<>();
+
+                for (Lot lot : allLotsForAuction) {
+                    if (lot.getSellerNumber() == sellerNumber) {
+                        if (lot.getSalePrice() != null) {
+                            lot.setSalePrice(lot.getSalePrice().setScale(2, RoundingMode.HALF_UP));
+                        }
+                        subListOfLots.add(lot);
+                    }
+                }
+
+                model.addAttribute("lotsForSeller", subListOfLots);
+                model.addAttribute("totalSalesForSeller", calculateTotalSoldBySeller(subListOfLots));
+                model.addAttribute("totalSellerFees", calculateTotalSellerFees(subListOfLots));
+                model.addAttribute("sellerFinalTotal", calculateFinalPaymentToSeller(subListOfLots));
+                model.addAttribute("auction", auction);
+
+               return "sellerreport";
+
+            } else {
+                return "redirect:/sellers?auctionId=" + currentAuctionId + "&error=" + URLEncoder
+                        .encode("There was an error finding the auction, please log out and back in.", "UTF-8");
+            }
+
+        } else {
+            return "redirect:/sellers?auctionId=" + currentAuctionId + "&error="
+                    + URLEncoder.encode("No seller number provided.", "UTF-8");
+        }
+
+    }
+
+    private BigDecimal calculateTotalSoldBySeller(List<Lot> subListOfLots) {
+        BigDecimal totalSoldBySeller = new BigDecimal("0.00");
+        totalSoldBySeller.setScale(2, RoundingMode.HALF_UP);
+
+        for (Lot lot: subListOfLots) {
+            if (lot.getSalePrice() != null) {
+                totalSoldBySeller = totalSoldBySeller.add(lot.getSalePrice()).setScale(2, RoundingMode.HALF_UP);
+            }
+        }
+
+        return totalSoldBySeller;
+    }
+
+    private BigDecimal calculateTotalSellerFees(List<Lot> subListOfLots) {
+        BigDecimal totalSellerFees = new BigDecimal("0.00");
+        totalSellerFees.setScale(2, RoundingMode.HALF_UP);
+
+        for (Lot lot: subListOfLots) {
+            if (lot.getSellerFees()!=null) {
+                totalSellerFees = totalSellerFees.add(lot.getSellerFees());
+                lot.setSellerFees(lot.getSellerFees().setScale(2, RoundingMode.HALF_UP));
+            }
+        }
+
+        return totalSellerFees.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal calculateFinalPaymentToSeller(List<Lot> subListOfLots) {
+        BigDecimal finalPaymentToSeller = new BigDecimal("0.00");
+        finalPaymentToSeller.setScale(2, RoundingMode.HALF_UP);
+
+        for (Lot lot: subListOfLots) {
+            if (lot.getPaymentToSeller() != null) {
+                finalPaymentToSeller = finalPaymentToSeller.add(lot.getPaymentToSeller());
+                lot.setPaymentToSeller(lot.getPaymentToSeller().setScale(2, RoundingMode.HALF_UP));
+            }
+        }
+
+        return finalPaymentToSeller.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    
+
+    @GetMapping("/buyerreport")
+    public String buyerReport(Principal principal, Model model, @RequestParam Map<String, String> queryParameters)
+            throws UnsupportedEncodingException {
+
+        LOGGER.info("Access to buyer report page");
+
+        String currentAuctionId = queryParameters.get("auctionId");
+        int buyerNumber = 0;
+
+        model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+
+        try {
+
+            if (queryParameters.containsKey("buyerNumber")) {
+                String buyerNumberString = queryParameters.get("buyerNumber");
+                buyerNumber = Integer.parseInt(buyerNumberString);
+            } else {
+                return "redirect:/buyers?auctionId=" + currentAuctionId + "&error="
+                        + URLEncoder.encode("Not able to find that buyer in this auction.", "UTF-8");
+            }
+
+        } catch (NumberFormatException e) {
+            return "redirect:/buyers?auctionId=" + currentAuctionId + "&error="
+                    + URLEncoder.encode("Not able to find that buyer in this auction.", "UTF-8");
+        }
+
+        if (buyerNumber != 0) {
+
+            model.addAttribute("currentAuctionId", currentAuctionId);
+
+            model.addAttribute("name", principal.getName());
+
+            Auction auction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+            if (auction != null && auction.getUserId().equals(principal.getName())) {
+
+                List<Buyer> allBuyers = dynamoDBService.getAllBuyersForAuction(currentAuctionId);
+
+                boolean foundBuyer = false;
+
+                for (Buyer buyer : allBuyers) {
+                    if (buyer.getBuyerNumber() == buyerNumber) {
+                        model.addAttribute("buyer", buyer);
+                        foundBuyer = true;
+                    }
+                }
+
+                if (!foundBuyer) {
+                    return "redirect:/buyers?auctionId=" + currentAuctionId + "&error="
+                            + URLEncoder.encode("Not able to find that buyer in this auction.", "UTF-8");
+                }
+
+                List<Lot> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
+                        .sorted((lot1, lot2) -> Integer.compare(lot1.getLotNumber(), lot2.getLotNumber()))
+                        .collect(toList());
+
+                List<Lot> subListOfLots = new ArrayList<>();
+
+                for (Lot lot : allLotsForAuction) {
+                    if (lot.getBuyerNumber() == buyerNumber) {
+                        if (lot.getSalePrice() != null) {
+                            lot.setSalePrice(lot.getSalePrice().setScale(2, RoundingMode.HALF_UP));
+                        }
+                        subListOfLots.add(lot);
+                    }
+                }
+
+                BigDecimal totalPurchasesByBuyer = calculateTotalPurchases(subListOfLots);
+
+                model.addAttribute("lotsForBuyer", subListOfLots);
+                model.addAttribute("totalPurchasesByBuyer", totalPurchasesByBuyer);
+                model.addAttribute("totalBuyerFees", calculateTotalBuyerFees(subListOfLots));
+                model.addAttribute("totalCost", calculateTotalCost(subListOfLots));
+                model.addAttribute("auction", auction);
+
+               return "buyerreport";
+
+            } else {
+                return "redirect:/buyers?auctionId=" + currentAuctionId + "&error=" + URLEncoder
+                        .encode("There was an error finding the auction, please log out and back in.", "UTF-8");
+            }
+
+        } else {
+            return "redirect:/buyers?auctionId=" + currentAuctionId + "&error="
+                    + URLEncoder.encode("No buyer number provided.", "UTF-8");
+        }
+
+    }
+
+    private BigDecimal calculateTotalPurchases(List<Lot> subListOfLots) {
+        BigDecimal totalPurchases = new BigDecimal("0.00");
+        totalPurchases.setScale(2, RoundingMode.HALF_UP);
+        
+        for (Lot lot: subListOfLots) {
+            if (lot.getSalePrice() != null) {
+                totalPurchases = totalPurchases.add(lot.getSalePrice());
+            }
+        }
+
+        return totalPurchases.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal calculateTotalBuyerFees(List<Lot> subListOfLots) {
+        BigDecimal totalBuyerFees = new BigDecimal("0.00");
+        totalBuyerFees.setScale(2, RoundingMode.HALF_UP);
+
+        for (Lot lot: subListOfLots) {
+            if (lot.getBuyerFees()!=null) {
+                totalBuyerFees = totalBuyerFees.add(lot.getBuyerFees()).setScale(2, RoundingMode.HALF_UP);
+                lot.setBuyerFees(lot.getBuyerFees().setScale(2, RoundingMode.HALF_UP));
+            }
+        }
+
+        return totalBuyerFees.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal calculateTotalCost(List<Lot> subListOfLots) {
+        BigDecimal totalCost = new BigDecimal("0.00");
+        totalCost.setScale(2, RoundingMode.HALF_UP);
+
+        for (Lot lot: subListOfLots) {
+            if (lot.getCostToBuyer() != null) {
+                totalCost = totalCost.add(lot.getCostToBuyer()).setScale(2, RoundingMode.HALF_UP);
+                lot.setCostToBuyer(lot.getCostToBuyer().setScale(2, RoundingMode.HALF_UP));
+            }
+        }
+
+        return totalCost.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    
+
     @GetMapping("/archive")
     public String archive(Principal principal, Model model, @RequestParam Map<String, String> queryParameters) {
 
-        LOGGER.info("Access to archive page");
-        String currentAuctionId = queryParameters.get("auctionId");
-        model.addAttribute("currentAuctionId", currentAuctionId);
+        LOGGER.info("Access to auctioneer's sheet");
 
+        String currentAuctionId = queryParameters.get("auctionId");
+
+        model.addAttribute("allAuctionsForUser", dynamoDBService.getAllAuctionsForUserInDateOrder(principal.getName()));
+
+        if (currentAuctionId != null && currentAuctionId != "null") {
+            Auction currentAuction = dynamoDBService.getOneAuctionById(currentAuctionId, principal.getName());
+
+            if (currentAuction != null && currentAuction.getUserId().equals(principal.getName())) {
+                LOGGER.info(currentAuction.getInputCompanyName() + " archive accessed.");
+
+                model.addAttribute("currentAuction", currentAuction);
+
+                List<Lot> allLotsForAuction = dynamoDBService.getAllLotsForAuction(currentAuctionId).stream()
+                        .sorted((lot1, lot2) -> Integer.compare(lot1.getLotNumber(), lot2.getLotNumber()))
+                        .collect(toList());
+
+                for (Lot lot: allLotsForAuction) {
+                    if (lot.getSalePrice() != null) {
+                        lot.setSalePrice(lot.getSalePrice().setScale(2, RoundingMode.HALF_UP));
+                    }
+                }
+
+                model.addAttribute("allLots", allLotsForAuction);
+
+                model.addAttribute("allSellers", dynamoDBService.getAllSellersForAuction(currentAuctionId).stream()
+                .sorted((seller1, seller2) -> Integer.compare(seller1.getSellerNumber(), seller2.getSellerNumber()))
+                .collect(toList()));
+
+                model.addAttribute("allBuyers", dynamoDBService.getAllBuyersForAuction(currentAuctionId).stream()
+                .sorted((buyer1, buyer2) -> Integer.compare(buyer1.getBuyerNumber(), buyer2.getBuyerNumber()))
+                .collect(toList()));
+
+
+                BigDecimal totalSellerFees = calculateTotalSellerFees(allLotsForAuction);
+                BigDecimal totalBuyerFees = calculateTotalBuyerFees(allLotsForAuction);
+                BigDecimal totalSalePrices = calculateTotalPurchases(allLotsForAuction);
+
+
+                model.addAttribute("totalRevenue", totalSellerFees.add(totalBuyerFees).setScale(2, RoundingMode.HALF_UP));
+                model.addAttribute("totalSellerFees", totalSellerFees.setScale(2, RoundingMode.HALF_UP));
+                model.addAttribute("totalBuyerFees", totalBuyerFees.setScale(2, RoundingMode.HALF_UP));
+                model.addAttribute("totalSalePrices", totalSalePrices.setScale(2, RoundingMode.HALF_UP));
+            } else {
+                return "emptyarchive";
+            }
+
+            
+
+        } else {
+            return "emptyarchive";
+        }
+
+        
         model.addAttribute("name", principal.getName());
+        model.addAttribute("userId", principal.getName());
+        model.addAttribute("currentAuctionId", currentAuctionId);
 
         return "archive";
 
