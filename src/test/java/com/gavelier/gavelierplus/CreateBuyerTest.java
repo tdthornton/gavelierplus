@@ -11,7 +11,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 import com.gavelier.gavelierplus.domain.Buyer;
-import com.gavelier.gavelierplus.domain.Seller;
 
 import java.net.URLEncoder;
 import org.apache.http.ParseException;
