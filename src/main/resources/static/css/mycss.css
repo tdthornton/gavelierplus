@@ -90,3 +90,7 @@
   .centerparagraph {
       text-align:center;
   }
+
+  .invoicelotcount {
+    font-size: 22px;
+  }
