@@ -802,6 +802,7 @@ public class Pages {
                 BigDecimal totalPurchasesByBuyer = calculateTotalPurchases(subListOfLots);
 
                 model.addAttribute("lotsForBuyer", subListOfLots);
+                model.addAttribute("numberOfPurchasedLots", subListOfLots.size());
                 model.addAttribute("totalPurchasesByBuyer", totalPurchasesByBuyer);
                 model.addAttribute("totalBuyerFees", calculateTotalBuyerFees(subListOfLots));
                 model.addAttribute("totalCost", calculateTotalCost(subListOfLots));
