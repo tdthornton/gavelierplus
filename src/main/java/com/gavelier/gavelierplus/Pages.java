@@ -670,6 +670,7 @@ public class Pages {
                 }
 
                 model.addAttribute("lotsForSeller", subListOfLots);
+                model.addAttribute("numberOfLotsSold", subListOfLots.size());
                 model.addAttribute("totalSalesForSeller", calculateTotalSoldBySeller(subListOfLots));
                 model.addAttribute("totalSellerFees", calculateTotalSellerFees(subListOfLots));
                 model.addAttribute("sellerFinalTotal", calculateFinalPaymentToSeller(subListOfLots));
